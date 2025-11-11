@@ -9,7 +9,10 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "VectorTypes.h"
 #include "Engine/LocalPlayer.h"
+#include "Interact/InteractComponent.h"
+#include "Math/UnitConversion.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -35,6 +38,8 @@ AHorrorSchoolCharacter::AHorrorSchoolCharacter()
 	Mesh1P->CastShadow = false;
 	Mesh1P->SetRelativeLocation(FVector(-30.f, 0.f, -150.f));
 
+	//Components
+	InteractComponent = CreateDefaultSubobject<UInteractComponent>(TEXT("InteractComponent"));
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -67,6 +72,10 @@ void AHorrorSchoolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AHorrorSchoolCharacter::Look);
+
+		//Interact
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AHorrorSchoolCharacter::OnInteract);
+		
 	}
 	else
 	{
@@ -99,4 +108,16 @@ void AHorrorSchoolCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AHorrorSchoolCharacter::OnInteract()
+{
+	if (!IsValid(InteractComponent))
+		return;
+
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+	
+	InteractComponent->Interact(CameraLocation, CameraRotation);
 }

@@ -83,4 +83,7 @@ Content/__ExternalActors__/
 Content/__ExternalObjects__/
 
 Content/*
-!Content/BP/**
+!Content/Blueprint/
+!Content/Blueprint/**
+!Content/Material/
+!Content/Material/**

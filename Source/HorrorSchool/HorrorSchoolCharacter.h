@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "HorrorSchoolCharacter.generated.h"
 
+class UInteractComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
@@ -44,6 +45,10 @@ class AHorrorSchoolCharacter : public ACharacter
 	/** Look Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* LookAction;
+
+	//Interact Input Action
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* InteractAction;
 	
 public:
 	AHorrorSchoolCharacter();
@@ -67,5 +72,11 @@ public:
 	/** Returns FirstPersonCameraComponent subobject **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
 
-};
+private:
+	UPROPERTY(VisibleAnywhere)
+	TObjectPtr<UInteractComponent> InteractComponent;
+
+	UFUNCTION()
+	void OnInteract();
+};  
 
