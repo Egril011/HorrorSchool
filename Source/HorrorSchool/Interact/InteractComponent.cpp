@@ -14,7 +14,8 @@ void UInteractComponent::Interact(FVector StartPoint, FRotator Rotator) const
 {
 	FVector InteractLocation = StartPoint + (Rotator.Vector() * InteractDistance);
 	FHitResult HitResult;
-	if (!GetWorld())
+
+	if (!IsValid(GetWorld()))
 		return;
 	
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
@@ -22,6 +23,15 @@ void UInteractComponent::Interact(FVector StartPoint, FRotator Rotator) const
 		StartPoint,
 		InteractLocation,
 		ECC_Visibility);
+
+	DrawDebugLine(
+		GetWorld(),
+		StartPoint,
+		InteractLocation,
+		FColor::Blue,
+		true,
+		10.f,
+		0);
 
 	if (bHit)
 	{

@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "HorrorSchoolCharacter.generated.h"
 
+class IUsableInterface;
 class UInteractComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
@@ -49,9 +50,20 @@ class AHorrorSchoolCharacter : public ACharacter
 	//Interact Input Action
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* InteractAction;
-	
+
+	//Input to use the item which the player hold
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* UseItemAction;
+
 public:
 	AHorrorSchoolCharacter();
+
+	//Return the Item Attachment scene
+	TObjectPtr<USceneComponent> GetItemAttachment() const { return ItemAttachment; }
+
+	//Return and Set the item which the player hold
+	TScriptInterface<IUsableInterface> GetEquippedItem() const {return EquippedItem; };
+	void SetEquippedItem(TScriptInterface<IUsableInterface> InEquippedItem) {EquippedItem = InEquippedItem; };
 
 protected:
 	/** Called for movement input */
@@ -66,6 +78,15 @@ protected:
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
 	// End of APawn interface
 
+
+protected:
+	//Where the item will be attached
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attachment", meta=(AllowPrivateAccess))
+	TObjectPtr<USceneComponent> ItemAttachment;
+
+	//Reference to the object which the player hold
+	TScriptInterface<IUsableInterface> EquippedItem;
+	
 public:
 	/** Returns Mesh1P subobject **/
 	USkeletalMeshComponent* GetMesh1P() const { return Mesh1P; }
@@ -78,5 +99,8 @@ private:
 
 	UFUNCTION()
 	void OnInteract();
+
+	UFUNCTION()
+	void UseItem();
 };  
 

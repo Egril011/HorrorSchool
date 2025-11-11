@@ -9,6 +9,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "UsableInterface.h"
 #include "VectorTypes.h"
 #include "Engine/LocalPlayer.h"
 #include "Interact/InteractComponent.h"
@@ -40,6 +41,10 @@ AHorrorSchoolCharacter::AHorrorSchoolCharacter()
 
 	//Components
 	InteractComponent = CreateDefaultSubobject<UInteractComponent>(TEXT("InteractComponent"));
+	ItemAttachment = CreateDefaultSubobject<USceneComponent>(TEXT("ItemAttachment"));
+	ItemAttachment->SetupAttachment(FirstPersonCameraComponent);
+	ItemAttachment->SetRelativeLocation(FVector(30.f, 10.f, -20.f));
+	
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -75,6 +80,9 @@ void AHorrorSchoolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		//Interact
 		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AHorrorSchoolCharacter::OnInteract);
+
+		//Use item
+		EnhancedInputComponent->BindAction(UseItemAction, ETriggerEvent::Started, this, &AHorrorSchoolCharacter::UseItem);
 		
 	}
 	else
@@ -120,4 +128,12 @@ void AHorrorSchoolCharacter::OnInteract()
 	GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
 	
 	InteractComponent->Interact(CameraLocation, CameraRotation);
+}
+
+void AHorrorSchoolCharacter::UseItem()
+{   
+	if (!EquippedItem)
+		return;
+	
+	IUsableInterface::Execute_Usable(EquippedItem.GetObject());
 }
