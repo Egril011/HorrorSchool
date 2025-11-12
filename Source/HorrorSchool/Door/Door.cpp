@@ -7,9 +7,71 @@
 ADoor::ADoor()
 {
 	DoorMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMeshComponent"));
+	RootComponent = DoorMeshComponent;
+
+	DoorSceneAnim = CreateDefaultSubobject<USceneComponent>(TEXT("DoorSceneAnim"));
+	DoorSceneAnim->SetupAttachment(RootComponent);
+
+	DoorTimelineComponent = CreateDefaultSubobject<UTimelineComponent>(TEXT("DoorTimelineComponent"));
+}
+
+void ADoor::BeginPlay()
+{
+	Super::BeginPlay();
+	DoorLocation = GetActorLocation();
+	EndDoorLocation = DoorSceneAnim->GetComponentLocation();
+
+	if(!IsValid(DoorTimelineComponent) || !IsValid(DoorCurve))
+		return;
+	
+	//For the timeline (animation)
+	FOnTimelineFloat OnTimelineFloat;
+	OnTimelineFloat.BindUFunction(this, FName("TickOpenDoor"));
+	
+	DoorTimelineComponent->AddInterpFloat(DoorCurve, OnTimelineFloat);
+	DoorTimelineComponent->SetLooping(false);
 }
 
 void ADoor::Interactable_Implementation(AActor* Actor)
 {
-	UE_LOG(LogTemp, Log, TEXT("Interactable_Implementation"));
+	if (!IsValid(DoorTimelineComponent))
+		return;
+
+	if (DoorTimelineComponent->IsPlaying() || DoorTimelineComponent->IsReversing())
+		return;
+	
+	if (!bDoorOpen)
+		OpenDoor();
+	else
+	{
+		CloseDoor();
+	}
+}
+
+void ADoor::OpenDoor() const
+{
+	if (!IsValid(DoorTimelineComponent))
+		return;
+	
+	DoorTimelineComponent->PlayFromStart();
+}
+
+void ADoor::CloseDoor() const
+{
+	if (!IsValid(DoorTimelineComponent))
+		return;
+	
+	DoorTimelineComponent->ReverseFromEnd();
+}
+
+void ADoor::TickOpenCloseDoor(float Value)
+{
+	FVector NewLocation = FMath::Lerp(DoorLocation, EndDoorLocation, Value);
+	SetActorLocation(NewLocation);
+	
+	if (Value >= 1.f)
+		bDoorOpen = true;
+	
+	else if (Value <= 0.f)
+		bDoorOpen = false;
 }

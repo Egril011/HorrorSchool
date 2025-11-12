@@ -87,3 +87,5 @@ Content/*
 !Content/Blueprint/**
 !Content/Material/
 !Content/Material/**
+!Content/Curve/
+!Content/Curve/**
