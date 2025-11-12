@@ -3,9 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "UsableInterface.h"
 #include "GameFramework/Actor.h"
-#include "Interact/InteractInterface.h"
+#include "HorrorSchool/Interact/Interfaces/InteractInterface.h"
+#include "HorrorSchool/Items/Interfaces/UsableInterface.h"
 #include "Flashlight.generated.h"
 
 class USpotLightComponent;

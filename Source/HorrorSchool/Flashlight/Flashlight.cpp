@@ -3,9 +3,10 @@
 
 #include "Flashlight.h"
 
-#include "HorrorSchoolCharacter.h"
-#include "ItemAttachComponent.h"
+
 #include "Components/SpotLightComponent.h"
+#include "HorrorSchool/HorrorSchoolCharacter.h"
+#include "HorrorSchool/Items/Components/ItemAttachComponent.h"
 
 // Sets default values
 AFlashlight::AFlashlight()

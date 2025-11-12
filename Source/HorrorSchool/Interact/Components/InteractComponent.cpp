@@ -2,8 +2,7 @@
 
 
 #include "InteractComponent.h"
-#include "InteractInterface.h"
-#include "LevelInstance/LevelInstanceTypes.h"
+#include "HorrorSchool/Interact/Interfaces/InteractInterface.h"
 
 // Sets default values for this component's properties
 UInteractComponent::UInteractComponent()

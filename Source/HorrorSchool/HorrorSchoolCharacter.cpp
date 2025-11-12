@@ -1,7 +1,6 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "HorrorSchoolCharacter.h"
-#include "HorrorSchoolProjectile.h"
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -9,11 +8,9 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
-#include "UsableInterface.h"
-#include "VectorTypes.h"
 #include "Engine/LocalPlayer.h"
-#include "Interact/InteractComponent.h"
-#include "Math/UnitConversion.h"
+#include "Interact/Components/InteractComponent.h"
+#include "Items/Interfaces/UsableInterface.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 

@@ -2,12 +2,12 @@
 
 
 #include "ItemAttachComponent.h"
-#include "HorrorSchoolCharacter.h"
 #include "GameFramework/PlayerController.h"
 #include "Camera/PlayerCameraManager.h"
 #include "Animation/AnimInstance.h"
 #include "Engine/LocalPlayer.h"
 #include "Engine/World.h"
+#include "HorrorSchool/HorrorSchoolCharacter.h"
 
 // Sets default values for this component's properties
 UItemAttachComponent::UItemAttachComponent()

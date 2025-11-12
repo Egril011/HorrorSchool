@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/TimelineComponent.h"
 #include "GameFramework/Actor.h"
-#include "HorrorSchool/Interact/InteractInterface.h"
+#include "HorrorSchool/Interact/Interfaces/InteractInterface.h"
 #include "Door.generated.h"
 
 UCLASS()
