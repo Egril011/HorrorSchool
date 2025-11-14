@@ -89,3 +89,5 @@ Content/*
 !Content/Material/**
 !Content/Curve/
 !Content/Curve/**
+!Content/Widget/
+!Content/Widget/**

@@ -4,9 +4,11 @@
 #include "Flashlight.h"
 
 
+#include "Components/FlashlightBatteryComponent.h"
 #include "Components/SpotLightComponent.h"
-#include "HorrorSchool/HorrorSchoolCharacter.h"
 #include "HorrorSchool/Items/Components/ItemAttachComponent.h"
+#include "HorrorSchool/HorrorSchoolCharacter.h"
+#include "HorrorSchool/Player/PlayerControllerHorrorSchool.h"
 
 // Sets default values
 AFlashlight::AFlashlight()
@@ -18,6 +20,7 @@ AFlashlight::AFlashlight()
 	SpotLightComponent->SetupAttachment(FlashlightMesh);
 
 	ItemAttachComponent = CreateDefaultSubobject<UItemAttachComponent>(TEXT("ItemAttachComponent"));
+	BatteryComponent = CreateDefaultSubobject<UFlashlightBatteryComponent>(TEXT("BatteryComponent"));
 }
 
 void AFlashlight::BeginPlay()
@@ -53,6 +56,16 @@ void AFlashlight::Interactable_Implementation(AActor* Interactor)
 		EquippedItem.SetInterface(Cast<IUsableInterface>(this));
 		Character->SetEquippedItem(EquippedItem);
 	}
+
+	//Show the UI
+	if (APlayerControllerHorrorSchool* PC = Cast<APlayerControllerHorrorSchool>(GetWorld()->GetFirstPlayerController()))
+	{
+		if (!IsValid(BatteryComponent))
+			return;
+		
+		PC->FlashlightNotifier = BatteryComponent->GetNotifier();
+		PC->ShowFlashlightUI();
+	}
 }
 
 void AFlashlight::Usable_Implementation()
@@ -68,10 +81,14 @@ void AFlashlight::Usable_Implementation()
 
 void AFlashlight::Flashlight_On() const
 {
-	if (!IsValid(SpotLightComponent))
+	if (!IsValid(SpotLightComponent) || !IsValid(BatteryComponent))
 		return;
 
-	SpotLightComponent->SetVisibility(true);
+	if (BatteryComponent->GetBatteryLife() > 0)
+	{
+		OnLightOn.Broadcast();
+		SpotLightComponent->SetVisibility(true);
+	}
 }
 
 void AFlashlight::Flashlight_Off() const
@@ -79,5 +96,6 @@ void AFlashlight::Flashlight_Off() const
 	if (!IsValid(SpotLightComponent))
 		return;
 
+	OnLightOff.Broadcast();
 	SpotLightComponent->SetVisibility(false);
 }

@@ -26,7 +26,7 @@ void ADoor::BeginPlay()
 	
 	//For the timeline (animation)
 	FOnTimelineFloat OnTimelineFloat;
-	OnTimelineFloat.BindUFunction(this, FName("TickOpenDoor"));
+	OnTimelineFloat.BindUFunction(this, FName("TickOpenCloseDoor"));
 	
 	DoorTimelineComponent->AddInterpFloat(DoorCurve, OnTimelineFloat);
 	DoorTimelineComponent->SetLooping(false);

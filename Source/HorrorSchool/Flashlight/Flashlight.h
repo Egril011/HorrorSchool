@@ -8,9 +8,11 @@
 #include "HorrorSchool/Items/Interfaces/UsableInterface.h"
 #include "Flashlight.generated.h"
 
+class UFlashlightBatteryComponent;
 class USpotLightComponent;
 class UPointLightComponent;
 class UItemAttachComponent;
+
 
 UCLASS()
 class HORRORSCHOOL_API AFlashlight : public AActor, public IInteractInterface, public IUsableInterface
@@ -20,6 +22,13 @@ class HORRORSCHOOL_API AFlashlight : public AActor, public IInteractInterface, p
 public:	
 	// Sets default values for this actor's properties
 	AFlashlight();
+
+	//Delegates
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLightOn);
+	FOnLightOn OnLightOn;
+	
+	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnLightOff);
+	FOnLightOff OnLightOff;
 
 protected:
 	virtual void BeginPlay() override;
@@ -32,6 +41,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Flashlight|Component")
 	TObjectPtr<UItemAttachComponent> ItemAttachComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Flashlight|Component")
+	TObjectPtr<UFlashlightBatteryComponent> BatteryComponent;
 
 private:
 	virtual void Interactable_Implementation(AActor* Interactor) override;
