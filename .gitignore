@@ -91,3 +91,5 @@ Content/*
 !Content/Curve/**
 !Content/Widget/
 !Content/Widget/**
+Content/Material/School/M_SchollWall.uasset
+Content/Material/School/M_Floor.uasset
