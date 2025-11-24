@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "AIHorrorEnemy.generated.h"
 
+class APatrolPath;
+
 UCLASS()
 class HORRORSCHOOL_API AAIHorrorEnemy : public ACharacter
 {
@@ -15,14 +17,14 @@ public:
 	// Sets default values for this character's properties
 	AAIHorrorEnemy();
 
+	//Return the PatrolPath
+	APatrolPath* GetPatrolPath() const {return PatrolPath;};
+
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(EditAnywhere, Category="PatrolPath")
+	TObjectPtr<APatrolPath> PatrolPath;
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };

@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "HorrorEnemyAIController.generated.h"
 
+class APatrolPoint;
 struct FAIStimulus;
 class UAISenseConfig_Sight;
 class UBehaviorTree;
@@ -20,7 +21,12 @@ class HORRORSCHOOL_API AHorrorEnemyAIController : public AAIController
 	GENERATED_BODY()
 	AHorrorEnemyAIController();
 
+public:
+	UPROPERTY()
+	TArray<APatrolPoint*> PatrolPointsAI;
+
 protected:
+	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void Tick(float DeltaTime) override;
 

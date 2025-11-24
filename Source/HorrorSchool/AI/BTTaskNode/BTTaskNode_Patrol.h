@@ -4,27 +4,30 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTTaskNode_ChasePlayer.generated.h"
+#include "BTTaskNode_Patrol.generated.h"
 
 struct FPathFollowingResult;
+class APatrolPoint;
 /**
  * 
  */
 UCLASS()
-class HORRORSCHOOL_API UBTTaskNode_ChasePlayer : public UBTTaskNode
+class HORRORSCHOOL_API UBTTaskNode_Patrol : public UBTTaskNode
 {
 	GENERATED_BODY()
-	UBTTaskNode_ChasePlayer();
+	UBTTaskNode_Patrol();
 
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	void OnMoveToComplete(FAIRequestID RequestID, const FPathFollowingResult & Result);
-
+	void OnMoveToCompleted(FAIRequestID RequestID, const FPathFollowingResult & Result);
+	
 private:
 	UPROPERTY()
-	TObjectPtr<UBlackboardComponent> BlackboardComp;
-
+	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
+	
 	UPROPERTY()
-	TObjectPtr<UBehaviorTreeComponent> BehaviorComp;
+	TObjectPtr<APawn> PawnOwner;
+
+	int CurrentIndex;
 };

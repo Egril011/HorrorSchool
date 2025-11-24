@@ -3,9 +3,12 @@
 
 #include "HorrorEnemyAIController.h"
 
+#include "AIHorrorEnemy.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "HorrorSchool/HorrorSchoolCharacter.h"
+#include "PatrolPoint/PatrolPath.h"
+#include "PatrolPoint/PatrolPoint.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 
@@ -31,6 +34,24 @@ AHorrorEnemyAIController::AHorrorEnemyAIController()
 
 	/**Blackboard**/
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BlackboardComponent"));
+}
+  
+void AHorrorEnemyAIController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//save the patrol in the controller
+	if (AAIHorrorEnemy* HorrorEnemy = Cast<AAIHorrorEnemy>(GetPawn()))
+	{
+		APatrolPath* PatrolPath = HorrorEnemy->GetPatrolPath();
+		if (!IsValid(PatrolPath))
+			return;
+
+		for (APatrolPoint* PatrolPoint : PatrolPath->PatrolPointPath)
+		{
+			PatrolPointsAI.Add(PatrolPoint);
+		}
+	}
 }
 
 void AHorrorEnemyAIController::OnPossess(APawn* InPawn)
@@ -83,16 +104,22 @@ void AHorrorEnemyAIController::OnTargetPerceptionUpdated(AActor* Actor, FAIStimu
 
 	if (Stimulus.WasSuccessfullySensed())
 	{
+		if (!IsValid(BlackboardComponent))
+			return;
+		
 		if (Actor->IsA<AHorrorSchoolCharacter>())
 		{
-			if (!IsValid(BlackboardComponent))
-				return;
-
-			BlackboardComponent->SetValueAsObject("Player", Actor);
+			if (BlackboardComponent->GetValueAsObject(TEXT("Player")) != Actor)
+			{
+				BlackboardComponent->SetValueAsObject(TEXT("Player"), Actor);
+			}
 		}
 	}
 	else
 	{
-		BlackboardComponent->SetValueAsObject("Player", nullptr);
+		if (BlackboardComponent->GetValueAsObject(TEXT("Player")) != nullptr)
+		{
+			BlackboardComponent->ClearValue(TEXT("Player"));
+		}
 	}
 }
