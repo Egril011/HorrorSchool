@@ -9,13 +9,38 @@ UInteractComponent::UInteractComponent()
 {
 }
 
-void UInteractComponent::Interact(FVector StartPoint, FRotator Rotator) const
+void UInteractComponent::Interact(FVector StartPoint, FRotator Rotator)
+{
+	if (LineTrace(StartPoint, Rotator))
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (!IsValid(HitActor))
+			return;
+		
+		if (HitActor->Implements<UInteractInterface>())
+			IInteractInterface::Execute_Interactable(HitActor, GetOwner());
+	}
+}
+
+void UInteractComponent::InteractHold(FVector StartPoint, FRotator Rotator, float HoldTime)
+{
+	if (LineTrace(StartPoint, Rotator))
+	{
+		AActor* HitActor = HitResult.GetActor();
+		if (!IsValid(HitActor))
+			return;
+		
+		if (HitActor->Implements<UInteractInterface>())
+			IInteractInterface::Execute_InteractableHold(HitActor, GetOwner(), HoldTime);
+	}
+}
+
+bool UInteractComponent::LineTrace(FVector StartPoint, FRotator Rotator)
 {
 	FVector InteractLocation = StartPoint + (Rotator.Vector() * InteractDistance);
-	FHitResult HitResult;
 
 	if (!IsValid(GetWorld()))
-		return;
+		return false;
 	
 	bool bHit = GetWorld()->LineTraceSingleByChannel(
 		HitResult,
@@ -31,14 +56,6 @@ void UInteractComponent::Interact(FVector StartPoint, FRotator Rotator) const
 		true,
 		10.f,
 		0);
-
-	if (bHit)
-	{
-		AActor* HitActor = HitResult.GetActor();
-		if (!IsValid(HitActor))
-			return;
-
-		if (HitActor->Implements<UInteractInterface>())
-			IInteractInterface::Execute_Interactable(HitActor, GetOwner());
-	}
+	
+	return bHit;
 }

@@ -15,10 +15,15 @@ public:
 	// Sets default values for this component's properties
 	UInteractComponent();
 
-	//Execute the InteractInterface which is held by the Actor and perform the LineTrace
-	void Interact(FVector StartPoint, FRotator Rotator) const;
+	//Execute the InteractInterface which is held by the Actor
+	void Interact(FVector StartPoint, FRotator Rotator);
+	void InteractHold(FVector StartPoint, FRotator Rotator, float HoldTime);
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Interact|Variable", meta=(AllowPrivateAccess))
 	float InteractDistance = 500.f;
+	
+	FHitResult HitResult;
+
+	bool LineTrace(FVector StartPoint, FRotator Rotator);
 };

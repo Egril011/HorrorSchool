@@ -76,11 +76,12 @@ void AHorrorSchoolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AHorrorSchoolCharacter::Look);
 
 		//Interact
-		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AHorrorSchoolCharacter::OnInteract);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Started, this, &AHorrorSchoolCharacter::OnInteractStart);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Completed, this, &AHorrorSchoolCharacter::OnInteract);
+		EnhancedInputComponent->BindAction(InteractAction, ETriggerEvent::Triggered, this, &AHorrorSchoolCharacter::OnInteractHold);
 
 		//Use item
 		EnhancedInputComponent->BindAction(UseItemAction, ETriggerEvent::Started, this, &AHorrorSchoolCharacter::UseItem);
-		
 	}
 	else
 	{
@@ -115,16 +116,44 @@ void AHorrorSchoolCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+void AHorrorSchoolCharacter::OnInteractStart()
+{
+	HoldTimer = 0;
+	bHoldTriggered = false;
+}
+
 void AHorrorSchoolCharacter::OnInteract()
 {
 	if (!IsValid(InteractComponent))
 		return;
 
+	if (bHoldTriggered)
+		return;
+	
 	FVector CameraLocation;
 	FRotator CameraRotation;
 	GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
-	
+
 	InteractComponent->Interact(CameraLocation, CameraRotation);
+}
+
+void AHorrorSchoolCharacter::OnInteractHold()
+{
+	if (!IsValid(InteractComponent))
+		return;
+	
+	HoldTimer += GetWorld()->GetDeltaSeconds();
+	if (HoldTimer >= HoldThreshold)
+	{
+		bHoldTriggered = true;
+		
+		FVector CameraLocation;
+		FRotator CameraRotation;
+		GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+
+		InteractComponent->InteractHold(CameraLocation, CameraRotation,
+			GetWorld()->GetDeltaSeconds());
+	}
 }
 
 void AHorrorSchoolCharacter::UseItem()

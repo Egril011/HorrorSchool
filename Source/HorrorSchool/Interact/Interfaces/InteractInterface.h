@@ -19,4 +19,7 @@ class IInteractInterface
 public:
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void Interactable(AActor* Interactor);
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void InteractableHold(AActor* Interactor, float HoldTime);
 };

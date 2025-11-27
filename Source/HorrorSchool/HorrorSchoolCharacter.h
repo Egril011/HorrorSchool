@@ -97,8 +97,20 @@ private:
 	UPROPERTY(VisibleAnywhere)
 	TObjectPtr<UInteractComponent> InteractComponent;
 
+	UPROPERTY(EditAnywhere, Category="Input|Hold", meta=(AllowPrivateAccess))
+	float HoldThreshold = 5.0f;
+
+	float HoldTimer = 0.f;
+	bool bHoldTriggered = false;
+	
 	UFUNCTION()
 	void OnInteract();
+
+	UFUNCTION()
+	void OnInteractHold();
+
+	UFUNCTION()
+	void OnInteractStart();
 
 	UFUNCTION()
 	void UseItem();
