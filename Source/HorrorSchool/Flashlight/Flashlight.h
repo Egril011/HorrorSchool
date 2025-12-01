@@ -8,6 +8,7 @@
 #include "HorrorSchool/Items/Interfaces/UsableInterface.h"
 #include "Flashlight.generated.h"
 
+class AHorrorSchoolCharacter;
 class UFlashlightBatteryComponent;
 class USpotLightComponent;
 class UPointLightComponent;
@@ -36,9 +37,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category="StaticMesh")
 	TObjectPtr<UStaticMeshComponent> FlashlightMesh;
 
-	UPROPERTY(EditAnywhere, Category="Flashlight|light")
-	TObjectPtr<USpotLightComponent> SpotLightComponent;
-
 	UPROPERTY(VisibleAnywhere, Category = "Flashlight|Component")
 	TObjectPtr<UItemAttachComponent> ItemAttachComponent;
 
@@ -52,4 +50,7 @@ private:
 	/*Open and close the flashlight*/
 	void Flashlight_On() const;
 	void Flashlight_Off() const;
+	
+	UPROPERTY()
+	USpotLightComponent* PlayerSpotLight = nullptr;
 };

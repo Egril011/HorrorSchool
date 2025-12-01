@@ -20,6 +20,9 @@ protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	void OnMoveToComplete(FAIRequestID RequestID, const FPathFollowingResult & Result);
+	
+	UPROPERTY(EditAnywhere, Category="ChasePlayer|Variables")
+	float MoveSpeed = 800.f;
 
 private:
 	UPROPERTY()

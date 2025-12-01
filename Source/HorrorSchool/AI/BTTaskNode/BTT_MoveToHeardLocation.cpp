@@ -7,6 +7,7 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HorrorSchool/AI/HorrorEnemyAIController.h"
 #include "Navigation/PathFollowingComponent.h"
 
@@ -31,6 +32,13 @@ EBTNodeResult::Type UBTT_MoveToHeardLocation::ExecuteTask(UBehaviorTreeComponent
 	APawn* CurrentPawn = HorrorEnemyAIController->GetPawn();
 	if (!IsValid(CurrentPawn))
 		return EBTNodeResult::Failed;
+	
+	// Modify the speed
+	UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(CurrentPawn->GetMovementComponent());
+	if (!IsValid(CharacterMovementComponent))
+		return EBTNodeResult::Failed;
+	
+	CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
 	
 	//Find if the hearing location is reachable
 	UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(

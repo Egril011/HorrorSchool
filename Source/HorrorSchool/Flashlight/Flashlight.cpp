@@ -16,9 +16,6 @@ AFlashlight::AFlashlight()
 	FlashlightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FlashlightMesh"));
 	RootComponent = FlashlightMesh;
 
-	SpotLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLightComponent"));
-	SpotLightComponent->SetupAttachment(FlashlightMesh);
-
 	ItemAttachComponent = CreateDefaultSubobject<UItemAttachComponent>(TEXT("ItemAttachComponent"));
 	BatteryComponent = CreateDefaultSubobject<UFlashlightBatteryComponent>(TEXT("BatteryComponent"));
 }
@@ -26,12 +23,6 @@ AFlashlight::AFlashlight()
 void AFlashlight::BeginPlay()
 {
 	Super::BeginPlay();
-
-	if (!IsValid(SpotLightComponent))
-		return;
-
-	//hide the light
-	SpotLightComponent->SetVisibility(false);
 }
 
 void AFlashlight::Interactable_Implementation(AActor* Interactor)
@@ -48,6 +39,7 @@ void AFlashlight::Interactable_Implementation(AActor* Interactor)
 
 	if (AHorrorSchoolCharacter* Character = Cast<AHorrorSchoolCharacter>(Interactor))
 	{
+		PlayerSpotLight = Character->GetSpotLightComponent();
 		ItemAttachComponent->AttachItemToPlayer(Character);
 
 		//make the player can use this item
@@ -70,32 +62,36 @@ void AFlashlight::Interactable_Implementation(AActor* Interactor)
 
 void AFlashlight::Usable_Implementation()
 {
-	if (!IsValid(SpotLightComponent))
+	if (!IsValid(PlayerSpotLight))
 		return;
 
-	if (SpotLightComponent->IsVisible())
+	if (PlayerSpotLight->IsVisible())
+	{
 		Flashlight_Off();
+	}
 	else
+	{
 		Flashlight_On();
+	}
 }
 
 void AFlashlight::Flashlight_On() const
 {
-	if (!IsValid(SpotLightComponent) || !IsValid(BatteryComponent))
+	if (!IsValid(PlayerSpotLight) || !IsValid(BatteryComponent))
 		return;
 
 	if (BatteryComponent->GetBatteryLife() > 0)
 	{
 		OnLightOn.Broadcast();
-		SpotLightComponent->SetVisibility(true);
+		PlayerSpotLight->SetVisibility(true);
 	}
 }
 
 void AFlashlight::Flashlight_Off() const
 {
-	if (!IsValid(SpotLightComponent))
+	if (!IsValid(PlayerSpotLight))
 		return;
 
 	OnLightOff.Broadcast();
-	SpotLightComponent->SetVisibility(false);
+	PlayerSpotLight->SetVisibility(false);
 }

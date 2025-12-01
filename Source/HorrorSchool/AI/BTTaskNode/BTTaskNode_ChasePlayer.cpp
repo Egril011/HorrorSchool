@@ -5,6 +5,7 @@
 
 #include "AIController.h"
 #include "BehaviorTree/Tasks/BTTask_MoveTo.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HorrorSchool/AI/HorrorEnemyAIController.h"
 #include "Navigation/PathFollowingComponent.h"
 
@@ -22,6 +23,13 @@ EBTNodeResult::Type UBTTaskNode_ChasePlayer::ExecuteTask(UBehaviorTreeComponent&
 	AHorrorEnemyAIController* AICon = Cast<AHorrorEnemyAIController>(OwnerComp.GetAIOwner());
 	if (!AICon)
 		return EBTNodeResult::Failed;
+	
+	//Modify the Speed
+	UCharacterMovementComponent* CharacterMovement = Cast<UCharacterMovementComponent>(AICon->GetPawn()->GetMovementComponent());
+	if (!IsValid(CharacterMovement))
+		return EBTNodeResult::Failed;
+	
+	CharacterMovement->MaxWalkSpeed = MoveSpeed;
 	
 	AActor* Player = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject("Player"));
 	if (!IsValid(Player))

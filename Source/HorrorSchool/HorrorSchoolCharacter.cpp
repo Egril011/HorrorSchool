@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
+#include "Components/SpotLightComponent.h"
 #include "Engine/LocalPlayer.h"
 #include "Interact/Components/InteractComponent.h"
 #include "Items/Interfaces/UsableInterface.h"
@@ -42,6 +43,13 @@ AHorrorSchoolCharacter::AHorrorSchoolCharacter()
 	ItemAttachment->SetupAttachment(FirstPersonCameraComponent);
 	ItemAttachment->SetRelativeLocation(FVector(30.f, 10.f, -20.f));
 	
+	SpotLightComponent = CreateDefaultSubobject<USpotLightComponent>(TEXT("SpotLightComponent"));
+	SpotLightComponent->SetupAttachment(FirstPersonCameraComponent);
+	
+	if (IsValid(SpotLightComponent))
+	{
+		SpotLightComponent->SetVisibility(false);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -88,7 +96,6 @@ void AHorrorSchoolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
 }
-
 
 void AHorrorSchoolCharacter::Move(const FInputActionValue& Value)
 {

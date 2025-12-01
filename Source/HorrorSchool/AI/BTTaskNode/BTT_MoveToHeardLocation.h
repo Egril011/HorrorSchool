@@ -30,6 +30,9 @@ protected:
 	// The cube' size when the search is starting
 	UPROPERTY(EditAnywhere, Category = "MoveToHeardLocation|Variables")
 	float StartingStep = 50;
+	
+	UPROPERTY(EditAnywhere, Category = "MoveToHeardLocation|Variables")
+	float MoveSpeed = 500.f;
 
 private:
 	UPROPERTY()

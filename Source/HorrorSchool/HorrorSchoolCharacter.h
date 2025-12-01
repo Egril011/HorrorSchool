@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "HorrorSchoolCharacter.generated.h"
 
+class USpotLightComponent;
 class IUsableInterface;
 class UInteractComponent;
 class UInputComponent;
@@ -64,6 +65,9 @@ public:
 	//Return and Set the item which the player hold
 	TScriptInterface<IUsableInterface> GetEquippedItem() const {return EquippedItem; };
 	void SetEquippedItem(TScriptInterface<IUsableInterface> InEquippedItem) {EquippedItem = InEquippedItem; };
+	
+	// Return the SpotLight for the flashlight
+	USpotLightComponent* GetSpotLightComponent() const { return SpotLightComponent; }
 
 protected:
 	/** Called for movement input */
@@ -83,6 +87,9 @@ protected:
 	//Where the item will be attached
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Attachment", meta=(AllowPrivateAccess))
 	TObjectPtr<USceneComponent> ItemAttachment;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Flashlight")
+	USpotLightComponent* SpotLightComponent;
 
 	//Reference to the object which the player hold
 	TScriptInterface<IUsableInterface> EquippedItem;
