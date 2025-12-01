@@ -14,7 +14,8 @@ public class HorrorSchool : ModuleRules
 			"InputCore", 
 			"EnhancedInput", 
 			"Slate",
-			"SlateCore" 
+			"SlateCore",
+			"NavigationSystem"
 		});
 	}
 }

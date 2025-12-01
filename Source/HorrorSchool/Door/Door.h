@@ -8,6 +8,8 @@
 #include "HorrorSchool/Interact/Interfaces/InteractInterface.h"
 #include "Door.generated.h"
 
+class USoundEmitter;
+
 UCLASS()
 class HORRORSCHOOL_API ADoor : public AActor, public IInteractInterface
 {
@@ -26,6 +28,13 @@ protected:
 	//Where the door has to go when the player opens it 
 	UPROPERTY(EditAnywhere, Category = "Door|SceneComponent")
 	TObjectPtr<USceneComponent> DoorSceneAnim;
+
+	// The audio
+	UPROPERTY(VisibleAnywhere, Category = "Door|Sound|Effect")
+	TObjectPtr<UAudioComponent> DoorAudioComponent;
+
+	UPROPERTY(VisibleAnywhere, Category = "Door|Sound")
+	TObjectPtr<USoundEmitter> SoundEmitter;
 
 private:
 	virtual void Interactable_Implementation(AActor* Actor) override;
@@ -46,4 +55,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Door|Timeline")
 	TObjectPtr<UCurveFloat> DoorCurve;
+
+	UPROPERTY(EditAnywhere, Category = "Door|SoundEffect")
+	TObjectPtr<USoundBase> DoorSoundEffect;
 };

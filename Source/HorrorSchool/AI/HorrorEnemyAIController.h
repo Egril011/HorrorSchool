@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "HorrorEnemyAIController.generated.h"
 
+class UAISenseConfig_Hearing;
 class APatrolPoint;
 struct FAIStimulus;
 class UAISenseConfig_Sight;
@@ -19,22 +20,26 @@ UCLASS()
 class HORRORSCHOOL_API AHorrorEnemyAIController : public AAIController
 {
 	GENERATED_BODY()
-	AHorrorEnemyAIController();
-
 public:
+	
+	AHorrorEnemyAIController();
+	
 	UPROPERTY()
 	TArray<APatrolPoint*> PatrolPointsAI;
 
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
-	virtual void Tick(float DeltaTime) override;
+	//virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
 	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
 	TObjectPtr<UAISenseConfig_Sight> AISenseSight;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
+	TObjectPtr<UAISenseConfig_Hearing> AISenseHearing;   
 
 	UPROPERTY(EditAnywhere, Category="AI")
 	TObjectPtr<UBehaviorTree> BehaviourTree;

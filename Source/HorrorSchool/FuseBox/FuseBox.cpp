@@ -30,6 +30,9 @@ void AFuseBox::BeginPlay()
 {
 	Super::BeginPlay();
 
+	//Create the notifier for the Widget
+	ProgressNotifier = NewObject<UProgressNotifier>(this);
+	
 	if (!IsValid(FuseBoxTimelineComponent) || !IsValid(FuseBoxCurve))
 		return;
 
@@ -39,15 +42,10 @@ void AFuseBox::BeginPlay()
 	FuseBoxTimelineComponent->AddInterpFloat(FuseBoxCurve, OnTimelineFloat);
 	FuseBoxTimelineComponent->SetLooping(false);
 
-	//Create the notifier for the Widget
-	ProgressNotifier = NewObject<UProgressNotifier>(this);
 }
 
 void AFuseBox::Interactable_Implementation(AActor* Interactor)
 {
-	if (!IsValid(FuseBoxTimelineComponent))
-		return;
-	
 	if (bIsRepaired)
 		return;
 
@@ -121,10 +119,13 @@ void AFuseBox::OpenFuseBox()
 	bIsInteracting = true;
 
 	//Play the open animation
-	if (!IsValid(FuseAnimeOpen) || !IsValid(FuseBoxMeshComponent))
+	if (!IsValid(FuseAnimeOpen) || !IsValid(FuseBoxMeshComponent) || !IsValid(FuseBoxTimelineComponent))
 		return;
 		
 	FuseBoxMeshComponent->PlayAnimation(FuseAnimeOpen, false);
+
+	if (!IsValid(Player))
+		return;
 		
 	Player->GetCharacterMovement()->DisableMovement();
 	PlayerCapsule = Player->GetCapsuleComponent()->GetComponentTransform();
@@ -135,6 +136,9 @@ void AFuseBox::OpenFuseBox()
 	//Show the fuse box UI
 	APlayerControllerHorrorSchool* PlayerController = Cast<APlayerControllerHorrorSchool>(Player->GetController());
 	if (!IsValid(PlayerController))
+		return;
+
+	if (!IsValid(ProgressNotifier))
 		return;
 	
 	PlayerController->ProgressNotifier = ProgressNotifier;
@@ -150,11 +154,14 @@ void AFuseBox::CloseFuseBox()
 	bIsInteracting = false;
 
 	//Play the close animation
-	if (!IsValid(FuseAnimeClose)|| !IsValid(FuseBoxMeshComponent))
+	if (!IsValid(FuseAnimeClose)|| !IsValid(FuseBoxMeshComponent) || !IsValid(FuseBoxTimelineComponent))
 		return;
 
 	FuseBoxMeshComponent->PlayAnimation(FuseAnimeClose, false);
-		
+	
+	if (!IsValid(Player))
+		return;
+	
 	Player->GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 
 	//Remove the Widget

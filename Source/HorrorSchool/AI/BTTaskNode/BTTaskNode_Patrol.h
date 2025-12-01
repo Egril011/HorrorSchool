@@ -21,6 +21,9 @@ protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	void OnMoveToCompleted(FAIRequestID RequestID, const FPathFollowingResult & Result);
+
+	UPROPERTY(EditAnywhere, Category="PatrolPath|Variables")
+	float MoveSpeed = 500.0f;
 	
 private:
 	UPROPERTY()

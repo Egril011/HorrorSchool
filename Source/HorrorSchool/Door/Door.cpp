@@ -3,6 +3,9 @@
 
 #include "Door.h"
 
+#include "Components/AudioComponent.h"
+#include "HorrorSchool/Sound/Component/SoundEmitter.h"
+
 // Sets default values
 ADoor::ADoor()
 {
@@ -13,6 +16,12 @@ ADoor::ADoor()
 	DoorSceneAnim->SetupAttachment(RootComponent);
 
 	DoorTimelineComponent = CreateDefaultSubobject<UTimelineComponent>(TEXT("DoorTimelineComponent"));
+
+	DoorAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("DoorAudioComponent"));
+	DoorAudioComponent->SetupAttachment(DoorMeshComponent);
+	DoorAudioComponent->bAutoActivate = false;
+
+	SoundEmitter = CreateDefaultSubobject<USoundEmitter>(TEXT("SoundEmitter"));
 }
 
 void ADoor::BeginPlay()
@@ -39,6 +48,11 @@ void ADoor::Interactable_Implementation(AActor* Actor)
 
 	if (DoorTimelineComponent->IsPlaying() || DoorTimelineComponent->IsReversing())
 		return;
+
+	if (IsValid(SoundEmitter))
+	{
+		SoundEmitter->EmitNoise(this);
+	}
 	
 	if (!bDoorOpen)
 		OpenDoor();
@@ -53,6 +67,12 @@ void ADoor::OpenDoor() const
 	if (!IsValid(DoorTimelineComponent))
 		return;
 	
+	if (IsValid(DoorSoundEffect) && IsValid(DoorAudioComponent))
+	{
+		DoorAudioComponent->SetSound(DoorSoundEffect);
+		DoorAudioComponent->Play();
+	}
+	
 	DoorTimelineComponent->PlayFromStart();
 }
 
@@ -60,6 +80,12 @@ void ADoor::CloseDoor() const
 {
 	if (!IsValid(DoorTimelineComponent))
 		return;
+
+	if (IsValid(DoorSoundEffect) && IsValid(DoorAudioComponent))
+	{
+		DoorAudioComponent->SetSound(DoorSoundEffect);
+		DoorAudioComponent->Play();
+	}
 	
 	DoorTimelineComponent->ReverseFromEnd();
 }

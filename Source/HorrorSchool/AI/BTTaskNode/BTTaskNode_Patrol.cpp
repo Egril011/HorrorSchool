@@ -4,6 +4,9 @@
 #include "BTTaskNode_Patrol.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "HorrorSchool/HorrorSchoolCharacter.h"
+#include "HorrorSchool/AI/AIHorrorEnemy.h"
 #include "HorrorSchool/AI/HorrorEnemyAIController.h"
 #include "HorrorSchool/AI/PatrolPoint/PatrolPoint.h"
 #include "Navigation/PathFollowingComponent.h"
@@ -21,8 +24,22 @@ EBTNodeResult::Type UBTTaskNode_Patrol::ExecuteTask(UBehaviorTreeComponent& Owne
 	if (!IsValid(HorrorEnemyAIController))
 		return EBTNodeResult::Failed;
 
+	// Set the Max speed of the Enemy
+	AAIHorrorEnemy* HorrorEnemy = Cast<AAIHorrorEnemy>(HorrorEnemyAIController->GetPawn());
+	if (!IsValid(HorrorEnemy))
+		return EBTNodeResult::Failed;
+
+	UCharacterMovementComponent* CharacterMovementComponent = HorrorEnemy->GetCharacterMovement();
+	if (!IsValid(CharacterMovementComponent))
+		return EBTNodeResult::Failed;
+
+	CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+	
 	//Get the patrol point from the current index and move the AI toward it 
 	CurrentIndex = OwnerComp.GetBlackboardComponent()->GetValueAsInt(TEXT("CurrentIndexPatrolPoint"));
+	if (CurrentIndex < 0)
+		return EBTNodeResult::Failed;
+	
 	APatrolPoint* PatrolPoints = HorrorEnemyAIController->PatrolPointsAI[CurrentIndex];
 
 	HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
