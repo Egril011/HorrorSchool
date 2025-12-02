@@ -4,6 +4,8 @@
 #include "Door.h"
 
 #include "Components/AudioComponent.h"
+#include "HorrorSchool/HorrorSchoolCharacter.h"
+#include "HorrorSchool/AI/AIHorrorEnemy.h"
 #include "HorrorSchool/Sound/Component/SoundEmitter.h"
 
 // Sets default values
@@ -48,10 +50,11 @@ void ADoor::Interactable_Implementation(AActor* Actor)
 
 	if (DoorTimelineComponent->IsPlaying() || DoorTimelineComponent->IsReversing())
 		return;
-
+	
+	//Noise for the AI
 	if (IsValid(SoundEmitter))
 	{
-		SoundEmitter->EmitNoise(this);
+		SoundEmitter->EmitNoise(this, 3000.f);
 	}
 	
 	if (!bDoorOpen)

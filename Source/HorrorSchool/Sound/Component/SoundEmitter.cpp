@@ -3,6 +3,7 @@
 
 #include "SoundEmitter.h"
 
+#include "HorrorSchool/Room/RoomVolume.h"
 #include "Perception/AISenseEvent.h"
 #include "Perception/AISense_Hearing.h"
 
@@ -11,7 +12,7 @@ USoundEmitter::USoundEmitter()
 {
 }
 
-void USoundEmitter::EmitNoise(AActor* Actor)
+void USoundEmitter::EmitNoise(AActor* Actor, float MaxRange)
 {
 	if (!IsValid(GetWorld()) || !IsValid(Actor))
 		return;
@@ -21,7 +22,5 @@ void USoundEmitter::EmitNoise(AActor* Actor)
 		Actor->GetActorLocation(),
 		1,
 		Actor,
-		3000.f);
+		MaxRange);
 }
-
-

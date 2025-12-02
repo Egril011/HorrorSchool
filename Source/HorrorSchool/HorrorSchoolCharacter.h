@@ -118,6 +118,9 @@ private:
 
 	UFUNCTION()
 	void OnInteractStart();
+	
+	UFUNCTION()
+	void OnInteractRelease();
 
 	UFUNCTION()
 	void UseItem();

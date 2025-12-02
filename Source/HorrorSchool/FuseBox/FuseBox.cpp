@@ -3,6 +3,7 @@
 
 #include "FuseBox.h"
 #include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
 #include "Components/BoxComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "Components/TimelineComponent.h"
@@ -10,6 +11,7 @@
 #include "HorrorSchool/HorrorSchoolCharacter.h"
 #include "HorrorSchool/Notifier/ProgressNotifier.h"
 #include "HorrorSchool/Player/PlayerControllerHorrorSchool.h"
+#include "HorrorSchool/Sound/Component/SoundEmitter.h"
 
 // Sets default values
 AFuseBox::AFuseBox()
@@ -24,6 +26,12 @@ AFuseBox::AFuseBox()
 
 	FuseBoxCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("FuseBoxCollider"));
 	FuseBoxCollider->SetupAttachment(FuseBoxMeshComponent);
+	
+	FuseBoxAudioComponent = CreateDefaultSubobject<UAudioComponent>(TEXT("FuseboxAudioComponent"));
+	FuseBoxAudioComponent->SetupAttachment(FuseBoxMeshComponent);
+	FuseBoxAudioComponent->bAutoActivate = false;
+	
+	FuseboxSoundEmitter = CreateDefaultSubobject<USoundEmitter>(TEXT("FuseboxSoundEmitter"));
 }
 
 void AFuseBox::BeginPlay()
@@ -71,6 +79,41 @@ void AFuseBox::InteractableHold_Implementation(AActor* Interactor, const float H
 	if (!bIsInteracting)
 		return;
 	
+	// Audio
+	if (IsValid(FuseBoxAudioComponent) && IsValid(FuseSoundBase))
+	{
+		if (HoldTime <= 0)
+		{
+			FuseBoxAudioComponent->Stop();
+		}
+		else
+		{
+			if (FuseBoxAudioComponent->Sound != FuseSoundBase)
+			{
+				FuseBoxAudioComponent->SetSound(FuseSoundBase);
+			}
+			
+			if (!FuseBoxAudioComponent->IsPlaying())
+			{
+				FuseBoxAudioComponent->Play();
+				
+				//Start the time to notify the AI
+				if (!IsValid(GetWorld()))
+					return;
+				
+				GetWorld()->GetTimerManager().ClearTimer(FuseTimerHandle);
+				GetWorld()->GetTimerManager().SetTimer(
+					FuseTimerHandle,
+					this,
+					&AFuseBox::NotifyAI,
+					TimerSpeed,
+					true,
+					0
+					);
+			}
+		}
+	}
+	
 	//To increase the progress bar's percentage
 	FuseBoxPercentageRepaired += HoldTime / RequiredRepairTime;
 	FuseBoxPercentageRepaired = FMath::Clamp(FuseBoxPercentageRepaired, 0.f, 1.f);
@@ -84,7 +127,7 @@ void AFuseBox::InteractableHold_Implementation(AActor* Interactor, const float H
 		
 		if (!IsValid(GetWorld()))
 			return;
-
+		
 		//Close the fuse box
 		FTimerHandle TimerHandle;
 		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
@@ -96,6 +139,15 @@ void AFuseBox::InteractableHold_Implementation(AActor* Interactor, const float H
 			false,
 			-1
 			);
+	}
+}
+
+void AFuseBox::InteractableRelease_Implementation(AActor* Interactor)
+{
+	if (IsValid(FuseBoxAudioComponent) && FuseBoxAudioComponent->IsPlaying())
+	{
+		FuseBoxAudioComponent->Stop();
+		ClearNotifyAI();
 	}
 }
 
@@ -171,4 +223,27 @@ void AFuseBox::CloseFuseBox()
 
 	PlayerControllerHorrorSchool->CloseFuseBoxUI();
 	FuseBoxTimelineComponent->ReverseFromEnd();
+	
+	//Stop the Audio
+	if (IsValid(FuseBoxAudioComponent) && FuseBoxAudioComponent->IsPlaying())
+	{
+		FuseBoxAudioComponent->Stop();
+		ClearNotifyAI();
+	}
+}
+
+void AFuseBox::NotifyAI()
+{
+	if (!IsValid(FuseboxSoundEmitter))
+		return;
+	
+	FuseboxSoundEmitter->EmitNoise(this, 4000.f);
+}
+
+void AFuseBox::ClearNotifyAI()
+{
+	if (!IsValid(GetWorld()))
+		return;
+	
+	GetWorld()->GetTimerManager().ClearTimer(FuseTimerHandle);
 }

@@ -18,10 +18,14 @@ public:
 	//Execute the InteractInterface which is held by the Actor
 	void Interact(FVector StartPoint, FRotator Rotator);
 	void InteractHold(FVector StartPoint, FRotator Rotator, float HoldTime);
+	void InteractRelease();
 
 private:
 	UPROPERTY(EditAnywhere, Category = "Interact|Variable", meta=(AllowPrivateAccess))
 	float InteractDistance = 500.f;
+	
+	UPROPERTY()
+	AActor* CurrentInteractActor;
 	
 	FHitResult HitResult;
 

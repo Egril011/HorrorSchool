@@ -129,13 +129,24 @@ void AHorrorSchoolCharacter::OnInteractStart()
 	bHoldTriggered = false;
 }
 
+void AHorrorSchoolCharacter::OnInteractRelease()
+{
+	if (!IsValid(InteractComponent))
+		return;
+	
+	InteractComponent->InteractRelease();
+}
+
 void AHorrorSchoolCharacter::OnInteract()
 {
 	if (!IsValid(InteractComponent))
 		return;
 
 	if (bHoldTriggered)
+	{
+		OnInteractRelease();
 		return;
+	}
 	
 	FVector CameraLocation;
 	FRotator CameraRotation;

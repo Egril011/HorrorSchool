@@ -24,15 +24,35 @@ void UInteractComponent::Interact(FVector StartPoint, FRotator Rotator)
 
 void UInteractComponent::InteractHold(FVector StartPoint, FRotator Rotator, float HoldTime)
 {
+	AActor* NewHitActor = nullptr;
+	
 	if (LineTrace(StartPoint, Rotator))
 	{
-		AActor* HitActor = HitResult.GetActor();
-		if (!IsValid(HitActor))
-			return;
-		
-		if (HitActor->Implements<UInteractInterface>())
-			IInteractInterface::Execute_InteractableHold(HitActor, GetOwner(), HoldTime);
+		NewHitActor = HitResult.GetActor();
 	}
+	
+	if (CurrentInteractActor && CurrentInteractActor != NewHitActor)
+	{
+		if (CurrentInteractActor->Implements<UInteractInterface>())
+		{
+			IInteractInterface::Execute_InteractableHold(CurrentInteractActor, GetOwner(), 0.f);
+		}
+		CurrentInteractActor = nullptr;
+	}
+	
+	if (IsValid(NewHitActor) && NewHitActor->Implements<UInteractInterface>())
+	{
+		CurrentInteractActor = NewHitActor;
+		IInteractInterface::Execute_InteractableHold(CurrentInteractActor, GetOwner(), HoldTime);
+	}
+}
+
+void UInteractComponent::InteractRelease()
+{
+	if (CurrentInteractActor && CurrentInteractActor->Implements<UInteractInterface>())
+	{
+		IInteractInterface::Execute_InteractableRelease(CurrentInteractActor, GetOwner());
+	}	
 }
 
 bool UInteractComponent::LineTrace(FVector StartPoint, FRotator Rotator)

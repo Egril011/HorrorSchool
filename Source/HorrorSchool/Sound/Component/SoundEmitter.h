@@ -17,5 +17,5 @@ public:
 	USoundEmitter();
 
 	//Emit noise for the AI can hear the object
-	void EmitNoise(AActor* Actor);
+	void EmitNoise(AActor* Actor, float MaxRange);
 };

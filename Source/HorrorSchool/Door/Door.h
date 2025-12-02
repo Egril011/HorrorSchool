@@ -35,6 +35,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category = "Door|Sound")
 	TObjectPtr<USoundEmitter> SoundEmitter;
+	
+	UPROPERTY(EditAnywhere, Category = "Door|SoundEffect")
+	TObjectPtr<USoundBase> DoorSoundEffect;
 
 private:
 	virtual void Interactable_Implementation(AActor* Actor) override;
@@ -55,7 +58,4 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Door|Timeline")
 	TObjectPtr<UCurveFloat> DoorCurve;
-
-	UPROPERTY(EditAnywhere, Category = "Door|SoundEffect")
-	TObjectPtr<USoundBase> DoorSoundEffect;
 };

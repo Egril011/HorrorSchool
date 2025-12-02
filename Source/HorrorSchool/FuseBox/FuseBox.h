@@ -7,6 +7,7 @@
 #include "HorrorSchool/Interact/Interfaces/InteractInterface.h"
 #include "FuseBox.generated.h"
 
+class USoundEmitter;
 class UBoxComponent;
 class URepairWidget;
 class UProgressNotifier;
@@ -35,6 +36,7 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Interactable_Implementation(AActor* Interactor) override;
 	virtual void InteractableHold_Implementation(AActor* Interactor, float HoldTime) override;
+	virtual void InteractableRelease_Implementation(AActor* Interactor) override;
 
 private:
 	/*Animation open and close*/
@@ -50,6 +52,20 @@ private:
 	
 	UPROPERTY(EditAnywhere, Category = "FuseBox|TimeLine", meta=(AllowPrivateAccess))
 	TObjectPtr<UCurveFloat> FuseBoxCurve;
+	
+	/*Audio*/
+	UPROPERTY(VisibleAnywhere, Category = "FuseBox|Audio")
+	TObjectPtr<UAudioComponent> FuseBoxAudioComponent;
+	
+	UPROPERTY(EditAnywhere, Category = "FuseBox|Audio")
+	TObjectPtr<USoundBase> FuseSoundBase;
+	
+	//AI
+	UPROPERTY(VisibleAnywhere, Category = "FuseBox|AI")
+	TObjectPtr<USoundEmitter> FuseboxSoundEmitter; 
+	
+	UPROPERTY(EditAnywhere, Category = "FuseBox|AI")
+	float TimerSpeed = 3.f;
 
 	/*Variables*/
 	UPROPERTY()
@@ -76,4 +92,13 @@ private:
 
 	//When the player closes the fuse box
 	void CloseFuseBox();
+	
+	//Alert the AI
+	FTimerHandle FuseTimerHandle;
+	
+	// X sec notify the AI with a timer
+	UFUNCTION()
+	void NotifyAI();
+	
+	void ClearNotifyAI();
 };

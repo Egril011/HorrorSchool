@@ -22,4 +22,7 @@ public:
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void InteractableHold(AActor* Interactor, float HoldTime);
+	
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+	void InteractableRelease(AActor* Interactor);
 };
