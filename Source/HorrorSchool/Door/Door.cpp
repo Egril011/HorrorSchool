@@ -51,17 +51,29 @@ void ADoor::Interactable_Implementation(AActor* Actor)
 	if (DoorTimelineComponent->IsPlaying() || DoorTimelineComponent->IsReversing())
 		return;
 	
-	//Noise for the AI
-	if (IsValid(SoundEmitter))
+	//Player
+	if (Actor->IsA<AHorrorSchoolCharacter>())
 	{
-		SoundEmitter->EmitNoise(this, 3000.f);
+		//Noise for the AI
+		if (IsValid(SoundEmitter))
+		{
+			SoundEmitter->EmitNoise(this, 3000.f);
+		}
+		
+		if (!bDoorOpen)
+			OpenDoor();
+		else
+		{
+			CloseDoor();
+		}
 	}
 	
-	if (!bDoorOpen)
-		OpenDoor();
-	else
+	else if(Actor->IsA<AAIHorrorEnemy>())
 	{
-		CloseDoor();
+		if (!bDoorOpen)
+		{
+			OpenDoor();
+		}
 	}
 }
 

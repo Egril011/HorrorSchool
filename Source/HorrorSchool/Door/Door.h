@@ -8,6 +8,7 @@
 #include "HorrorSchool/Interact/Interfaces/InteractInterface.h"
 #include "Door.generated.h"
 
+class ARoomVolume;
 class USoundEmitter;
 
 UCLASS()
@@ -18,6 +19,9 @@ class HORRORSCHOOL_API ADoor : public AActor, public IInteractInterface
 public:	
 	// Sets default values for this actor's properties
 	ADoor();
+	
+	// Return the link with the room volume
+	ARoomVolume* GetRoomVolume() const {return DoorLinkRoomVolume;};
 
 protected:
 	virtual void BeginPlay() override;
@@ -58,4 +62,7 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = "Door|Timeline")
 	TObjectPtr<UCurveFloat> DoorCurve;
+	
+	UPROPERTY(EditAnywhere, Category = "Door|AI", meta=(AllowPrivateAccess))
+	TObjectPtr<ARoomVolume> DoorLinkRoomVolume;
 };

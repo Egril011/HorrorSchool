@@ -23,6 +23,7 @@ class HORRORSCHOOL_API AHorrorEnemyAIController : public AAIController
 public:
 	
 	AHorrorEnemyAIController();
+	bool FindNearestPoint(FVector& ObjectLocation);
 	
 	UPROPERTY()
 	TArray<APatrolPoint*> PatrolPointsAI;
@@ -30,7 +31,6 @@ public:
 protected:
 	virtual void BeginPlay() override;
 	virtual void OnPossess(APawn* InPawn) override;
-	//virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI|Perception")
 	TObjectPtr<UAIPerceptionComponent> AIPerceptionComponent;
@@ -46,6 +46,14 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, Category="AI")
 	UBlackboardComponent* BlackboardComponent;
+	
+	// Maximum area limit from the center (example 800x800)
+	UPROPERTY(EditAnywhere, Category = "MoveToHeardLocation|Variables")
+	float MaxStep = 800.f;
+
+	// The cube' size when the search is starting
+	UPROPERTY(EditAnywhere, Category = "MoveToHeardLocation|Variables")
+	float StartingStep = 50;
 
 	UFUNCTION()
 	void OnTargetPerceptionUpdated(AActor* Actor, FAIStimulus Stimulus);

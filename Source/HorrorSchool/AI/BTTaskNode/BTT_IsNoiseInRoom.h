@@ -4,34 +4,32 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "BTT_MoveToHeardLocation.generated.h"
+#include "BTT_IsNoiseInRoom.generated.h"
 
-class AHorrorEnemyAIController;
 struct FPathFollowingResult;
+class ADoor;
+class AHorrorEnemyAIController;
 /**
  * 
  */
 UCLASS()
-class HORRORSCHOOL_API UBTT_MoveToHeardLocation : public UBTTaskNode
+class HORRORSCHOOL_API UBTT_IsNoiseInRoom : public UBTTaskNode
 {
 	GENERATED_BODY()
-public:
-	UBTT_MoveToHeardLocation();
+	UBTT_IsNoiseInRoom();
 	
 protected:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	virtual EBTNodeResult::Type AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	void OnMoveToComplete(FAIRequestID RequestID, const FPathFollowingResult& Result);
 	
-	UPROPERTY(EditAnywhere, Category = "MoveToHeardLocation|Variables") 
+	UPROPERTY(EditAnywhere, Category = "IsNoiseInRoom|Variables")
 	float MoveSpeed = 500.f;
-
+	
 private:
-	UPROPERTY()
-	TObjectPtr<AHorrorEnemyAIController> HorrorEnemyAIController = nullptr;
-
-	UPROPERTY()
-	TObjectPtr<UBehaviorTreeComponent> BTComp = nullptr;
-
-	FVector HearingLocation;
+	TObjectPtr<ADoor> TargetDoor = nullptr;
+	TObjectPtr<AHorrorEnemyAIController> AIController = nullptr;
+	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent = nullptr;
+	
+	FVector TargetLocation = FVector::ZeroVector;
 };

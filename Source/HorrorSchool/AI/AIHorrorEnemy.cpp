@@ -13,4 +13,9 @@ AAIHorrorEnemy::AAIHorrorEnemy()
 void AAIHorrorEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
+}
+
+void AAIHorrorEnemy::SetCurrentRoom_Implementation(FName Room)
+{
+	CurrentRoomAI = Room;
 } 
