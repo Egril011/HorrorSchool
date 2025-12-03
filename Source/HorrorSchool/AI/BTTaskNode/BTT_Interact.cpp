@@ -4,7 +4,7 @@
 #include "BTT_Interact.h"
 
 #include "AIController.h"
-#include "Interact/Interfaces/InteractInterface.h"
+#include "HorrorSchool/Interact/Interfaces/InteractInterface.h"
 
 UBTT_Interact::UBTT_Interact()
 {

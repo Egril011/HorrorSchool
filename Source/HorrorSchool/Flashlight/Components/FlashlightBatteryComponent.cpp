@@ -75,4 +75,9 @@ void UFlashlightBatteryComponent::BatteryTimer()
 		true
 		);
 }
+
+void UFlashlightBatteryComponent::AddBatteryLife(float IncreasementBatteryLife)
+{
+	BatteryLife = FMath::Clamp(BatteryLife + IncreasementBatteryLife, 0.0f, 100.0f);
+}
   

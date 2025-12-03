@@ -47,7 +47,7 @@ private:
 	virtual void Interactable_Implementation(AActor* Actor) override;
 
 	/*Open and close the door*/
-	void OpenDoor() const;
+	void OpenDoor() const; 
 	void CloseDoor() const;
 	UFUNCTION()
 	void TickOpenCloseDoor(float Value);

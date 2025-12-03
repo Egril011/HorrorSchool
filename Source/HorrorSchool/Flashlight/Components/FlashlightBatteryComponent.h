@@ -19,7 +19,10 @@ public:
 
 	//Get the battery life
 	float GetBatteryLife() const { return BatteryLife; }
-
+	
+	//Set the battery life
+	void AddBatteryLife(float IncreasementBatteryLife);
+	
 	//Get the FlashlightNotifier
 	TObjectPtr<UFlashlightBatteryNotifier> GetNotifier() const { return  FlashlightBatteryNotifier; }
 
