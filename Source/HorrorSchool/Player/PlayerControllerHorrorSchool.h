@@ -6,7 +6,9 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerControllerHorrorSchool.generated.h"
 
-class UJumpscareWidget;
+class UNotificationWidget;
+class UWinWidget;
+class UMenuWidget;
 class URepairWidget;
 class UProgressNotifier;
 class UFlashlightBatteryNotifier;
@@ -30,12 +32,25 @@ public:
 	
 	//UI for the JumpScare
 	void JumpscareUI();
+	
+	//UI Win
+	void WinUI();
+	
+	//Show notification
+	void ShowNotificationUI(FString Text,  float TimerCleanUp);
+	
+	//Clean up notification
+	UFUNCTION()
+	void CleanUpNotification();
 
 	UPROPERTY()
 	TObjectPtr<UFlashlightBatteryNotifier> FlashlightNotifier;
 
 	UPROPERTY()
 	TObjectPtr<UProgressNotifier> ProgressNotifier;
+	
+	UPROPERTY()
+	TObjectPtr<UNotificationWidget> NotificationWidgetRef;
 	
 private:
 	/*Flashlight*/
@@ -51,5 +66,13 @@ private:
 	
 	//Jumpscare
 	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
-	TSubclassOf<UJumpscareWidget> JumpscareWidget;
+	TSubclassOf<UMenuWidget> JumpscareWidget;
+	
+	//Win
+	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
+	TSubclassOf<UMenuWidget> WinWidget;
+	
+	//Notification
+	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
+	TSubclassOf<UNotificationWidget> NotificationWidget;
 };

@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "JumpscareWidget.h"
+#include "MenuWidget.h"
 
 #include "Components/Button.h"
 #include "Kismet/GameplayStatics.h"
 
-void UJumpscareWidget::NativeConstruct()
+void UMenuWidget::NativeConstruct()
 {
 	Super::NativeConstruct();
 	
@@ -25,17 +25,17 @@ void UJumpscareWidget::NativeConstruct()
 	if (IsValid(ButtonExitGame))
 	{
 		ButtonExitGame->OnClicked.RemoveAll(this);
-		ButtonExitGame->OnClicked.AddUniqueDynamic(this, &UJumpscareWidget::QuitGame);
+		ButtonExitGame->OnClicked.AddUniqueDynamic(this, &UMenuWidget::QuitGame);
 	}
 	
 	if (IsValid(ButtonRestart))
 	{
 		ButtonRestart->OnClicked.RemoveAll(this);
-		ButtonRestart->OnClicked.AddUniqueDynamic(this, &UJumpscareWidget::RestartGame);
+		ButtonRestart->OnClicked.AddUniqueDynamic(this, &UMenuWidget::RestartGame);
 	}
 }
 
-void UJumpscareWidget::QuitGame()
+void UMenuWidget::QuitGame()
 {
 	if (!IsValid(PlayerControllerRef))
 		return;
@@ -48,7 +48,7 @@ void UJumpscareWidget::QuitGame()
 	UGameplayStatics::OpenLevel(this, TEXT("MainMenu"));
 }
 
-void UJumpscareWidget::RestartGame()
+void UMenuWidget::RestartGame()
 {
 	if (!IsValid(PlayerControllerRef))
 		return;

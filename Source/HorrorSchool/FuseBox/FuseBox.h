@@ -22,6 +22,9 @@ class HORRORSCHOOL_API AFuseBox : public AActor, public IInteractInterface
 public:	
 	// Sets default values for this actor 's properties
 	AFuseBox();
+	
+	// Return if he is repaired
+	bool GetIsRepaired() const { return bIsRepaired; }
 
 protected:
 	UPROPERTY(EditAnywhere, Category = "FuseBox")

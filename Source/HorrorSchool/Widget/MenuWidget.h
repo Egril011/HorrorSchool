@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "JumpscareWidget.generated.h"
+#include "MenuWidget.generated.h"
 
 class UButton;
 /**
  * 
  */
 UCLASS()
-class HORRORSCHOOL_API UJumpscareWidget : public UUserWidget
+class HORRORSCHOOL_API UMenuWidget : public UUserWidget
 {
 	GENERATED_BODY()
 	

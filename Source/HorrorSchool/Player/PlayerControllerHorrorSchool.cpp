@@ -5,7 +5,8 @@
 
 #include "Blueprint/UserWidget.h"
 #include "HorrorSchool/Flashlight/Widgets/FlashlightBatteryWidget.h"
-#include "HorrorSchool/Widget/JumpscareWidget.h"
+#include "HorrorSchool/Widget/MenuWidget.h"
+#include "HorrorSchool/Widget/NotificationWidget.h"
 #include "HorrorSchool/Widget/RepairWidget.h"
 
 void APlayerControllerHorrorSchool::ShowFlashlightUI()
@@ -51,10 +52,60 @@ void APlayerControllerHorrorSchool::JumpscareUI()
 	if (!IsValid(JumpscareWidget))
 		return;
 	
-	UJumpscareWidget* Jumpscare = CreateWidget<UJumpscareWidget>(this, JumpscareWidget);
+	UMenuWidget* Jumpscare = CreateWidget<UMenuWidget>(this, JumpscareWidget);
 	if (!IsValid(Jumpscare))
 		return;
 	
 	Jumpscare->SetPlayerController(this);
 	Jumpscare->AddToViewport();
+}
+
+void APlayerControllerHorrorSchool::WinUI()
+{
+	if (!IsValid(WinWidget))
+		return;
+	
+	UMenuWidget* WinUI = CreateWidget<UMenuWidget>(this, WinWidget);
+	if (!IsValid(WinUI))
+		return;
+	
+	WinUI->SetPlayerController(this);
+	WinUI->AddToViewport();
+}
+
+void APlayerControllerHorrorSchool::ShowNotificationUI(FString Text, float TimerCleanUp)
+{
+	if (!IsValid(NotificationWidget))
+		return;
+	
+	Text = Text.Replace(TEXT("\\n"), TEXT("\n"));
+	
+	UNotificationWidget* NotificationUI = CreateWidget<UNotificationWidget>(this, NotificationWidget);
+	if (!IsValid(NotificationUI))
+		return;
+	
+	NotificationWidgetRef = NotificationUI;
+	NotificationUI->SetText(Text);
+	NotificationUI->AddToViewport();
+	
+	//Clean up the notification widget after X time
+	if (!IsValid(GetWorld()))
+		return;
+	
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	GetWorld()->GetTimerManager().SetTimer(
+		TimerHandle, 
+		this,
+		&APlayerControllerHorrorSchool::CleanUpNotification,
+		TimerCleanUp,
+		false);
+}
+
+void APlayerControllerHorrorSchool::CleanUpNotification()
+{
+	if (!IsValid(NotificationWidgetRef))
+		return;
+	
+	NotificationWidgetRef->RemoveFromParent();
 }
