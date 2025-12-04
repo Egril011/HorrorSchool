@@ -55,6 +55,10 @@ class AHorrorSchoolCharacter : public ACharacter
 	//Input to use the item which the player hold
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* UseItemAction;
+	
+	// Inpuit to sprint
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* SprintAction;
 
 public:
 	AHorrorSchoolCharacter();
@@ -70,6 +74,8 @@ public:
 	USpotLightComponent* GetSpotLightComponent() const { return SpotLightComponent; }
 
 protected:
+	virtual void BeginPlay() override;
+	
 	/** Called for movement input */
 	void Move(const FInputActionValue& Value);
 
@@ -110,6 +116,11 @@ private:
 	float HoldTimer = 0.f;
 	bool bHoldTriggered = false;
 	
+	float NormalSpeed;
+	
+	UPROPERTY(EditAnywhere, Category="Player|Sprint")
+	float SprintSpeed;
+	
 	UFUNCTION()
 	void OnInteract();
 
@@ -124,5 +135,11 @@ private:
 
 	UFUNCTION()
 	void UseItem();
+	
+	UFUNCTION()
+	void Sprint();
+	
+	UFUNCTION()
+	void Walk();
 };  
 

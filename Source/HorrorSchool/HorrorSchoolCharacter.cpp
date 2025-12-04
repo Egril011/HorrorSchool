@@ -10,6 +10,7 @@
 #include "InputActionValue.h"
 #include "Components/SpotLightComponent.h"
 #include "Engine/LocalPlayer.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Interact/Components/InteractComponent.h"
 #include "Items/Interfaces/UsableInterface.h"
 
@@ -90,10 +91,25 @@ void AHorrorSchoolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 
 		//Use item
 		EnhancedInputComponent->BindAction(UseItemAction, ETriggerEvent::Started, this, &AHorrorSchoolCharacter::UseItem);
+		
+		//Sprint
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &AHorrorSchoolCharacter::Sprint);
+		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AHorrorSchoolCharacter::Walk);
 	}
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
+	}
+}
+
+void AHorrorSchoolCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	//Save the normal Speed
+	if (UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(GetCharacterMovement()))
+	{
+		NormalSpeed = CharacterMovementComponent->GetMaxSpeed();
 	}
 }
 
@@ -180,4 +196,20 @@ void AHorrorSchoolCharacter::UseItem()
 		return;
 	
 	IUsableInterface::Execute_Usable(EquippedItem.GetObject());
+}
+
+void AHorrorSchoolCharacter::Sprint()
+{
+	if (UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(GetCharacterMovement()))
+	{
+		CharacterMovementComponent->MaxWalkSpeed = SprintSpeed;
+	}
+}
+
+void AHorrorSchoolCharacter::Walk()
+{
+	if (UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(GetCharacterMovement()))
+	{
+		CharacterMovementComponent->MaxWalkSpeed = NormalSpeed;
+	}
 }
