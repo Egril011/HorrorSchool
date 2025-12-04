@@ -7,6 +7,7 @@
 #include "HorrorSchool/HorrorSchoolCharacter.h"
 #include "HorrorSchool/AI/AIHorrorEnemy.h"
 #include "HorrorSchool/AI/HorrorEnemyAIController.h"
+#include "HorrorSchool/Player/PlayerControllerHorrorSchool.h"
 
 UBTT_JumpScare::UBTT_JumpScare()
 {
@@ -35,14 +36,31 @@ EBTNodeResult::Type UBTT_JumpScare::ExecuteTask(UBehaviorTreeComponent& OwnerCom
 	if (!IsValid(Player))
 		return EBTNodeResult::Failed;
 	
-	MovePlayerCameraToPawnCamera();
+	//Show the UI 
+	if (!bShowWidget)
+	{
+		APlayerControllerHorrorSchool* PlayerControllerHorrorSchool = Cast<APlayerControllerHorrorSchool>(Player->GetController());
+		if (!IsValid(PlayerControllerHorrorSchool))
+			return EBTNodeResult::Failed;
+		
+		PlayerControllerHorrorSchool->JumpscareUI();
+		bShowWidget = true;
+	}
 	
+	//Shake the Camera
+	MovePlayerCameraToPawnCamera();
 	return EBTNodeResult::Succeeded;
 }
 
 EBTNodeResult::Type UBTT_JumpScare::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	return Super::AbortTask(OwnerComp, NodeMemory);
+	BehaviorTreeComponent = nullptr;
+	AIController = nullptr;
+	Player = nullptr;
+	bShowWidget = false;
+	
+	FinishLatentAbort(OwnerComp);
+	return EBTNodeResult::Aborted;
 }
 
 void UBTT_JumpScare::MovePlayerCameraToPawnCamera()

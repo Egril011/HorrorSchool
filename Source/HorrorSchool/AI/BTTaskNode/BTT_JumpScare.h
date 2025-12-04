@@ -39,4 +39,5 @@ private:
 	TObjectPtr<AHorrorSchoolCharacter> Player;
 	
 	void MovePlayerCameraToPawnCamera();
+	bool bShowWidget = false;
 };

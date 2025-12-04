@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "HorrorSchool/Flashlight/Widgets/FlashlightBatteryWidget.h"
+#include "HorrorSchool/Widget/JumpscareWidget.h"
 #include "HorrorSchool/Widget/RepairWidget.h"
 
 void APlayerControllerHorrorSchool::ShowFlashlightUI()
@@ -43,4 +44,17 @@ void APlayerControllerHorrorSchool::CloseFuseBoxUI()
 	RepairWidget->RemoveFromParent();
 	RepairWidget = nullptr;
 	ProgressNotifier = nullptr;
+}
+
+void APlayerControllerHorrorSchool::JumpscareUI()
+{
+	if (!IsValid(JumpscareWidget))
+		return;
+	
+	UJumpscareWidget* Jumpscare = CreateWidget<UJumpscareWidget>(this, JumpscareWidget);
+	if (!IsValid(Jumpscare))
+		return;
+	
+	Jumpscare->SetPlayerController(this);
+	Jumpscare->AddToViewport();
 }

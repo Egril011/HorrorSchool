@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerControllerHorrorSchool.generated.h"
 
+class UJumpscareWidget;
 class URepairWidget;
 class UProgressNotifier;
 class UFlashlightBatteryNotifier;
@@ -26,12 +27,16 @@ public:
 
 	//Close the fuseBox widget class
 	void CloseFuseBoxUI();
+	
+	//UI for the JumpScare
+	void JumpscareUI();
 
 	UPROPERTY()
 	TObjectPtr<UFlashlightBatteryNotifier> FlashlightNotifier;
 
 	UPROPERTY()
 	TObjectPtr<UProgressNotifier> ProgressNotifier;
+	
 private:
 	/*Flashlight*/
 	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
@@ -40,7 +45,11 @@ private:
 	//FuseBox
 	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
 	TSubclassOf<URepairWidget> RepairWidgetClass;
-
+	
 	UPROPERTY()
 	TObjectPtr<URepairWidget> RepairWidget;
+	
+	//Jumpscare
+	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
+	TSubclassOf<UJumpscareWidget> JumpscareWidget;
 };
