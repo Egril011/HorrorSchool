@@ -3,10 +3,14 @@
 
 #include "AIHorrorEnemy.h"
 
+#include "Camera/CameraComponent.h"
+#include "Components/AudioComponent.h"
+
 // Sets default values
 AAIHorrorEnemy::AAIHorrorEnemy()
 {
-	
+	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
+	Camera->SetupAttachment(RootComponent);
 }
 
 // Called to bind functionality to input

@@ -7,6 +7,7 @@
 #include "HorrorSchool/Room/RoomInterface.h"
 #include "AIHorrorEnemy.generated.h"
 
+class UCameraComponent;
 class APatrolPath;
 
 UCLASS()
@@ -30,6 +31,9 @@ public:
 protected:
 	UPROPERTY(EditAnywhere, Category="PatrolPath")
 	TObjectPtr<APatrolPath> PatrolPath;
+	
+	UPROPERTY(EditAnywhere)
+	UCameraComponent* Camera;
 	
 	virtual void SetCurrentRoom_Implementation(FName Room) override;
 
