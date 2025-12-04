@@ -12,6 +12,7 @@
 UBTTaskNode_ChasePlayer::UBTTaskNode_ChasePlayer()
 {
 	NodeName = "Chase Player";
+	bCreateNodeInstance = true;
 	bNotifyTaskFinished = true;
 }
 
@@ -20,12 +21,18 @@ EBTNodeResult::Type UBTTaskNode_ChasePlayer::ExecuteTask(UBehaviorTreeComponent&
 	BehaviorComp = &OwnerComp;
 	
 	//Move the AI to the player
-	AHorrorEnemyAIController* AICon = Cast<AHorrorEnemyAIController>(OwnerComp.GetAIOwner());
-	if (!AICon)
+	AIController = Cast<AHorrorEnemyAIController>(OwnerComp.GetAIOwner());
+	if (!AIController)
 		return EBTNodeResult::Failed;
 	
+	if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+	{
+		PFC->OnRequestFinished.RemoveAll(this);
+		PFC->OnRequestFinished.AddUObject(this, &UBTTaskNode_ChasePlayer::OnMoveToComplete);
+	}
+	
 	//Modify the Speed
-	UCharacterMovementComponent* CharacterMovement = Cast<UCharacterMovementComponent>(AICon->GetPawn()->GetMovementComponent());
+	UCharacterMovementComponent* CharacterMovement = Cast<UCharacterMovementComponent>(AIController->GetPawn()->GetMovementComponent());
 	if (!IsValid(CharacterMovement))
 		return EBTNodeResult::Failed;
 	
@@ -35,21 +42,25 @@ EBTNodeResult::Type UBTTaskNode_ChasePlayer::ExecuteTask(UBehaviorTreeComponent&
 	if (!IsValid(Player))
 		return EBTNodeResult::Failed;
 	
-	AICon->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-	AICon->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this,
-		&UBTTaskNode_ChasePlayer::OnMoveToComplete);
-	
-	AICon->MoveToActor(Player);
+	AIController->MoveToActor(Player);
 	return EBTNodeResult::InProgress;
 }
 
 EBTNodeResult::Type UBTTaskNode_ChasePlayer::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	if (AHorrorEnemyAIController* AICon = Cast<AHorrorEnemyAIController>(OwnerComp.GetAIOwner()))
+	if (IsValid(AIController))
 	{
-		AICon->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
+		if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+		{
+			PFC->OnRequestFinished.RemoveAll(this);
+		}
+		
+		AIController->StopMovement();
+		AIController = nullptr;
 	}
-
+	
+	BehaviorComp = nullptr;
+	
 	FinishLatentAbort(OwnerComp);
 	return EBTNodeResult::Aborted;
 }
@@ -59,16 +70,25 @@ void UBTTaskNode_ChasePlayer::OnMoveToComplete(FAIRequestID RequestID, const FPa
 	if (!IsValid(BehaviorComp))
 		return;
 	
-	AHorrorEnemyAIController* AICon = Cast<AHorrorEnemyAIController>(BehaviorComp->GetAIOwner());
-	if (!IsValid(AICon))
-		return;
-
-	AICon->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-	
-	if (Result.Code == EBTNodeResult::Failed || Result.Code == EBTNodeResult::Aborted)
+	if (IsValid(AIController))
 	{
-		FinishLatentTask(*BehaviorComp, EBTNodeResult::Failed);
+		if(UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+		{
+			PFC->OnRequestFinished.RemoveAll(this);
+		}
+		
+		AIController->StopMovement();
+		AIController = nullptr;
 	}
 	
-	FinishLatentTask(*BehaviorComp, EBTNodeResult::Succeeded);
+	if (Result.Code == EPathFollowingResult::Success)
+	{
+		FinishLatentTask(*BehaviorComp, EBTNodeResult::Succeeded);
+		BehaviorComp = nullptr;
+	}
+	else
+	{
+		FinishLatentTask(*BehaviorComp, EBTNodeResult::Failed);
+		BehaviorComp = nullptr;
+	}
 }

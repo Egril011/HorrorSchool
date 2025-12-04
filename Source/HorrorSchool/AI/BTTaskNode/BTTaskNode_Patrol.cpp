@@ -15,20 +15,29 @@ UBTTaskNode_Patrol::UBTTaskNode_Patrol()
 {
 	NodeName = "AI Patrol";
 	bNotifyTaskFinished = true;
+	bCreateNodeInstance = true;
 }
 
 EBTNodeResult::Type UBTTaskNode_Patrol::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	BehaviorTreeComponent = &OwnerComp;
-	AHorrorEnemyAIController* HorrorEnemyAIController = Cast<AHorrorEnemyAIController>(OwnerComp.GetAIOwner());
-	if (!IsValid(HorrorEnemyAIController))
+	
+	AIController = Cast<AHorrorEnemyAIController>(OwnerComp.GetAIOwner());
+	if (!IsValid(AIController))
 		return EBTNodeResult::Failed;
-
+	
+	if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+	{
+		PFC->OnRequestFinished.RemoveAll(this);
+		PFC->OnRequestFinished.AddUObject(this, &UBTTaskNode_Patrol::OnMoveToCompleted);
+	}
+	
 	// Set the Max speed of the Enemy
-	AAIHorrorEnemy* HorrorEnemy = Cast<AAIHorrorEnemy>(HorrorEnemyAIController->GetPawn());
+	AAIHorrorEnemy* HorrorEnemy = Cast<AAIHorrorEnemy>(AIController->GetPawn());
 	if (!IsValid(HorrorEnemy))
 		return EBTNodeResult::Failed;
 
+	//Modify the Speed of the AI
 	UCharacterMovementComponent* CharacterMovementComponent = HorrorEnemy->GetCharacterMovement();
 	if (!IsValid(CharacterMovementComponent))
 		return EBTNodeResult::Failed;
@@ -40,23 +49,26 @@ EBTNodeResult::Type UBTTaskNode_Patrol::ExecuteTask(UBehaviorTreeComponent& Owne
 	if (CurrentIndex < 0)
 		return EBTNodeResult::Failed;
 	
-	APatrolPoint* PatrolPoints = HorrorEnemyAIController->PatrolPointsAI[CurrentIndex];
-
-	HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-	HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this,
-		&UBTTaskNode_Patrol::OnMoveToCompleted);
+	APatrolPoint* PatrolPoints = AIController->PatrolPointsAI[CurrentIndex];
 	
-	HorrorEnemyAIController->MoveToActor(PatrolPoints);
+	AIController->MoveToActor(PatrolPoints);
 	return EBTNodeResult::InProgress;
 }
 
 EBTNodeResult::Type UBTTaskNode_Patrol::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	if (AHorrorEnemyAIController* HorrorEnemyAIController = Cast<AHorrorEnemyAIController>(
-		OwnerComp.GetAIOwner()))
+	if (IsValid(AIController))
 	{
-		HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
+		if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+		{
+			PFC->OnRequestFinished.RemoveAll(this);
+		}
+		
+		AIController->StopMovement();
+		AIController = nullptr;
 	}
+	
+	BehaviorTreeComponent = nullptr;
 	
 	FinishLatentAbort(OwnerComp);
 	return EBTNodeResult::Aborted;
@@ -67,19 +79,29 @@ void UBTTaskNode_Patrol::OnMoveToCompleted(FAIRequestID RequestID, const FPathFo
 	if (!IsValid(BehaviorTreeComponent))
 		return;
 
-	AHorrorEnemyAIController* AIEnemyController = Cast<AHorrorEnemyAIController>(BehaviorTreeComponent->GetAIOwner());
-	if (!IsValid(AIEnemyController))
-		return;
-	
-	AIEnemyController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-
-	// Advance to next patrol point or loop back to the beginning if it's a success
-	if (Result.Code == EBTNodeResult::Succeeded)
+	if (IsValid(AIController))
 	{
-		CurrentIndex = (CurrentIndex + 1) % AIEnemyController->PatrolPointsAI.Num();  
-		BehaviorTreeComponent->GetBlackboardComponent()->SetValueAsInt("CurrentIndexPatrolPoint", CurrentIndex);
-		FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Succeeded);
+		if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+		{
+			PFC->OnRequestFinished.RemoveAll(this);
+		}
+		
+		AIController->StopMovement();
 	}
 
-	FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Failed);
+	// Advance to next patrol point or loop back to the beginning if it's a success
+	if (Result.Code == EPathFollowingResult::Success)
+	{
+		CurrentIndex = (CurrentIndex + 1) % AIController->PatrolPointsAI.Num();  
+		BehaviorTreeComponent->GetBlackboardComponent()->SetValueAsInt("CurrentIndexPatrolPoint", CurrentIndex);
+		
+		AIController = nullptr;
+		FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Succeeded);
+		BehaviorTreeComponent = nullptr;
+	}
+	else
+	{
+		FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Failed);
+		BehaviorTreeComponent = nullptr;
+	}
 }

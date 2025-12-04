@@ -6,6 +6,7 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTaskNode_ChasePlayer.generated.h"
 
+class AHorrorEnemyAIController;
 struct FPathFollowingResult;
 /**
  * 
@@ -26,8 +27,8 @@ protected:
 
 private:
 	UPROPERTY()
-	TObjectPtr<UBlackboardComponent> BlackboardComp;
-
-	UPROPERTY()
 	TObjectPtr<UBehaviorTreeComponent> BehaviorComp;
+	
+	UPROPERTY()
+	TObjectPtr<AHorrorEnemyAIController> AIController;
 };

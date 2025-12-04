@@ -6,6 +6,11 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTT_IsNoiseInRoom.generated.h"
 
+namespace EPathFollowingRequestResult
+{
+	enum Type : int;
+}
+
 struct FPathFollowingResult;
 class ADoor;
 class AHorrorEnemyAIController;
@@ -14,7 +19,7 @@ class AHorrorEnemyAIController;
  */
 UCLASS()
 class HORRORSCHOOL_API UBTT_IsNoiseInRoom : public UBTTaskNode
-{
+{ 
 	GENERATED_BODY()
 	UBTT_IsNoiseInRoom();
 	
@@ -30,6 +35,4 @@ private:
 	TObjectPtr<ADoor> TargetDoor = nullptr;
 	TObjectPtr<AHorrorEnemyAIController> AIController = nullptr;
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent = nullptr;
-	
-	FVector TargetLocation = FVector::ZeroVector;
 };

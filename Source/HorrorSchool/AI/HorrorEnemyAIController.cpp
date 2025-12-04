@@ -160,6 +160,7 @@ bool AHorrorEnemyAIController::FindNearestPoint(FVector& ObjectLocation)
 	//Searching the nearest point around the DotLocation 
 	while (Step < MaxStep)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Step = %f"), Step);
 		FVector Extend = FVector(Step, Step, Step);
 		if (NavSys->ProjectPointToNavigation(SearchLocation, NavLocation, Extend))
 		{

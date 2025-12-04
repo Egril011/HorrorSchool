@@ -17,6 +17,7 @@ UBTT_IsNoiseInRoom::UBTT_IsNoiseInRoom()
 {
 	NodeName = "Is Noise in a Room";
 	bCreateNodeInstance = true;
+	bNotifyTaskFinished = true;
 }
 
 EBTNodeResult::Type UBTT_IsNoiseInRoom::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -57,7 +58,6 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::ExecuteTask(UBehaviorTreeComponent& Owne
 			if (RoomVolume->GetRoomName() == RoomName)
 			{
 				TargetDoor = Door;
-				TargetLocation = Door->GetActorLocation();
 				break;
 			}
 		}
@@ -70,6 +70,13 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::ExecuteTask(UBehaviorTreeComponent& Owne
 	if (!IsValid(GetWorld()))
 		return EBTNodeResult::Failed;
 	
+	if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Noise2"))
+		PFC->OnRequestFinished.RemoveAll(this);
+		PFC->OnRequestFinished.AddUObject(this, &UBTT_IsNoiseInRoom::OnMoveToComplete);
+	}
+	
 	//Project the Point on the NavMesh
 	UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(
 		GetWorld(),
@@ -80,25 +87,20 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::ExecuteTask(UBehaviorTreeComponent& Owne
 	// If reachable move the AI to this point
 	if (NavigationPath && NavigationPath->IsValid() && !NavigationPath->IsPartial())
 	{
-		AIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-		AIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this,
-			&UBTT_IsNoiseInRoom::OnMoveToComplete);
+		UE_LOG(LogTemp, Warning, TEXT("Noise3"))
 		AIController->MoveToActor(TargetDoor);
-		
 		return EBTNodeResult::InProgress;
 	}
+	
+	FVector TargetLocation = TargetDoor->GetActorLocation();
 	
 	//Otherwise find the nearest point and then move the AI
 	if (AIController->FindNearestPoint(TargetLocation))
 	{
-		AIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-		AIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this,
-			&UBTT_IsNoiseInRoom::OnMoveToComplete);
-		
 		AIController->MoveToLocation(TargetLocation);
 		return EBTNodeResult::InProgress;
 	}
-	
+
 	return EBTNodeResult::Failed;
 }
 
@@ -106,8 +108,13 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::AbortTask(UBehaviorTreeComponent& OwnerC
 {
 	if (IsValid(AIController))
 	{
-		AIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
+		if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+		{
+			PFC->OnRequestFinished.RemoveAll(this);
+		}
+		
 		AIController->GetBlackboardComponent()->ClearValue(TEXT("NoiseRoomName"));
+		AIController->StopMovement();
 		AIController = nullptr;
 	}
 	
@@ -115,8 +122,6 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::AbortTask(UBehaviorTreeComponent& OwnerC
 	{
 		TargetDoor = nullptr;
 	}
-	
-	BehaviorTreeComponent = nullptr;
 	
 	FinishLatentAbort(OwnerComp);
 	return EBTNodeResult::Aborted;
@@ -126,8 +131,13 @@ void UBTT_IsNoiseInRoom::OnMoveToComplete(FAIRequestID RequestID, const FPathFol
 {
 	if (IsValid(AIController))
 	{
-		AIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
+		if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
+		{
+			PFC->OnRequestFinished.RemoveAll(this);
+		}
+		
 		AIController->GetBlackboardComponent()->ClearValue(TEXT("NoiseRoomName"));
+		AIController->StopMovement();
 		AIController = nullptr;
 	}
 	
@@ -140,10 +150,11 @@ void UBTT_IsNoiseInRoom::OnMoveToComplete(FAIRequestID RequestID, const FPathFol
 		{
 			TargetDoor = nullptr;
 		}
-	
+		
 		FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Succeeded);
-		return;
 	}
-	
-	FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Failed);
+	else
+	{
+		FinishLatentTask(*BehaviorTreeComponent, EBTNodeResult::Failed);
+	}
 }

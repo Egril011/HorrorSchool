@@ -6,6 +6,7 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTaskNode_Patrol.generated.h"
 
+class AHorrorEnemyAIController;
 struct FPathFollowingResult;
 class APatrolPoint;
 /**
@@ -30,7 +31,7 @@ private:
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
 	
 	UPROPERTY()
-	TObjectPtr<APawn> PawnOwner;
-
+	TObjectPtr<AHorrorEnemyAIController> AIController;
+	
 	int CurrentIndex;
 };

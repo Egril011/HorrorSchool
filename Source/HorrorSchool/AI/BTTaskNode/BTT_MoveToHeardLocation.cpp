@@ -15,6 +15,7 @@ UBTT_MoveToHeardLocation::UBTT_MoveToHeardLocation()
 {
 	NodeName = TEXT("MoveToHeardLocation");
 	bCreateNodeInstance = true;
+	bNotifyTaskFinished = true;
 }
 
 EBTNodeResult::Type UBTT_MoveToHeardLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
@@ -40,6 +41,12 @@ EBTNodeResult::Type UBTT_MoveToHeardLocation::ExecuteTask(UBehaviorTreeComponent
 	
 	CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
 	
+	if (UPathFollowingComponent* PFC = HorrorEnemyAIController->GetPathFollowingComponent())
+	{
+		PFC->OnRequestFinished.RemoveAll(this);
+		PFC->OnRequestFinished.AddUObject(this, &UBTT_MoveToHeardLocation::OnMoveToComplete);
+	}
+	UE_LOG(LogTemp, Warning, TEXT("TESt8"));
 	//Find if the hearing location is reachable
 	UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(
 		GetWorld(),
@@ -50,34 +57,29 @@ EBTNodeResult::Type UBTT_MoveToHeardLocation::ExecuteTask(UBehaviorTreeComponent
 	// If reachable move the AI to this point otherwise find the nearest point
 	if (NavigationPath && NavigationPath->IsValid() && !NavigationPath->IsPartial())
 	{
-		HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-		HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this,
-			&UBTT_MoveToHeardLocation::OnMoveToComplete);
-		
 		HorrorEnemyAIController->MoveToLocation(HearingLocation);
-		
 		return EBTNodeResult::InProgress;
 	}
 	
 	if (HorrorEnemyAIController->FindNearestPoint(HearingLocation))
-	{
-		HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-		HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.AddUObject(this,
-			&UBTT_MoveToHeardLocation::OnMoveToComplete);
-		
+	{UE_LOG(LogTemp, Warning, TEXT("TESt7"));
 		HorrorEnemyAIController->MoveToLocation(HearingLocation);
-		
 		return EBTNodeResult::InProgress;
 	}
-	
+	UE_LOG(LogTemp, Warning, TEXT("TESt6"));
 	return EBTNodeResult::Failed;
 }
 
 EBTNodeResult::Type UBTT_MoveToHeardLocation::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	if (IsValid(HorrorEnemyAIController))
-	{
-		HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
+	{ 
+		if (UPathFollowingComponent* PFC = HorrorEnemyAIController->GetPathFollowingComponent())
+		{
+			PFC->OnRequestFinished.RemoveAll(this);
+		}
+
+		HorrorEnemyAIController->StopMovement();
 		HorrorEnemyAIController = nullptr;
 	}
 	
@@ -87,23 +89,31 @@ EBTNodeResult::Type UBTT_MoveToHeardLocation::AbortTask(UBehaviorTreeComponent& 
 
 void UBTT_MoveToHeardLocation::OnMoveToComplete(FAIRequestID RequestID, const FPathFollowingResult& Result)
 {
-	if (IsValid(HorrorEnemyAIController))
-	{	
-		HorrorEnemyAIController->GetPathFollowingComponent()->OnRequestFinished.RemoveAll(this);
-		HorrorEnemyAIController = nullptr;
-	}
-	
 	if (!IsValid(BTComp))
 		return;
 	
-	if (Result.Code == EPathFollowingResult::Success)
-	{
-		BTComp->GetBlackboardComponent()->ClearValue("HearingLocation");
-		BTComp->GetBlackboardComponent()->SetValueAsBool(TEXT("BHearing"), false);
+	if (IsValid(HorrorEnemyAIController))
+	{	
+		if (UPathFollowingComponent* PFC = HorrorEnemyAIController->GetPathFollowingComponent())
+		{
+			PFC->OnRequestFinished.RemoveAll(this);
+		}
 		
-		FinishLatentTask(*BTComp, EBTNodeResult::Succeeded);
-		return;
+		HorrorEnemyAIController->StopMovement();
+		HorrorEnemyAIController = nullptr;
 	}
 	
-	FinishLatentTask(*BTComp, EBTNodeResult::Failed);
+	BTComp->GetBlackboardComponent()->ClearValue("HearingLocation");
+	BTComp->GetBlackboardComponent()->SetValueAsBool(TEXT("BHearing"), false);
+	
+	if (Result.Code == EPathFollowingResult::Success)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TESt"));
+		FinishLatentTask(*BTComp, EBTNodeResult::Succeeded);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("TESt1"));
+		FinishLatentTask(*BTComp, EBTNodeResult::Failed);
+	}
 }
