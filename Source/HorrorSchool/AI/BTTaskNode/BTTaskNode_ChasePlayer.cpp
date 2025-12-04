@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/Tasks/BTTask_MoveTo.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HorrorSchool/AI/AIHorrorEnemy.h"
 #include "HorrorSchool/AI/HorrorEnemyAIController.h"
 #include "Navigation/PathFollowingComponent.h"
 
@@ -31,12 +32,19 @@ EBTNodeResult::Type UBTTaskNode_ChasePlayer::ExecuteTask(UBehaviorTreeComponent&
 		PFC->OnRequestFinished.AddUObject(this, &UBTTaskNode_ChasePlayer::OnMoveToComplete);
 	}
 	
+	AAIHorrorEnemy* AIHorrorEnemy = Cast<AAIHorrorEnemy>(AIController->GetPawn());
+	if (!IsValid(AIHorrorEnemy))
+		return EBTNodeResult::Failed;
+	
 	//Modify the Speed
-	UCharacterMovementComponent* CharacterMovement = Cast<UCharacterMovementComponent>(AIController->GetPawn()->GetMovementComponent());
+	UCharacterMovementComponent* CharacterMovement = Cast<UCharacterMovementComponent>(AIHorrorEnemy->GetMovementComponent());
 	if (!IsValid(CharacterMovement))
 		return EBTNodeResult::Failed;
 	
 	CharacterMovement->MaxWalkSpeed = MoveSpeed;
+	
+	//Stop the Sound from the AI
+	AIHorrorEnemy->StopSound();
 	
 	AActor* Player = Cast<AActor>(OwnerComp.GetBlackboardComponent()->GetValueAsObject("Player"));
 	if (!IsValid(Player))

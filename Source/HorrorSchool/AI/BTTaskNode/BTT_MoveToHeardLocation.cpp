@@ -8,6 +8,7 @@
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "HorrorSchool/AI/AIHorrorEnemy.h"
 #include "HorrorSchool/AI/HorrorEnemyAIController.h"
 #include "Navigation/PathFollowingComponent.h"
 
@@ -30,7 +31,7 @@ EBTNodeResult::Type UBTT_MoveToHeardLocation::ExecuteTask(UBehaviorTreeComponent
 	if (!IsValid(HorrorEnemyAIController))
 		return EBTNodeResult::Failed;
 	
-	APawn* CurrentPawn = HorrorEnemyAIController->GetPawn();
+	AAIHorrorEnemy* CurrentPawn = Cast<AAIHorrorEnemy>(HorrorEnemyAIController->GetPawn());
 	if (!IsValid(CurrentPawn))
 		return EBTNodeResult::Failed;
 	
@@ -40,6 +41,9 @@ EBTNodeResult::Type UBTT_MoveToHeardLocation::ExecuteTask(UBehaviorTreeComponent
 		return EBTNodeResult::Failed;
 	
 	CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+	
+	//Stop the Sound from the AI
+	CurrentPawn->StopSound();
 	
 	if (UPathFollowingComponent* PFC = HorrorEnemyAIController->GetPathFollowingComponent())
 	{

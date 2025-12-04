@@ -5,7 +5,6 @@
 
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "HorrorSchool/HorrorSchoolCharacter.h"
 #include "HorrorSchool/AI/AIHorrorEnemy.h"
 #include "HorrorSchool/AI/HorrorEnemyAIController.h"
 #include "HorrorSchool/AI/PatrolPoint/PatrolPoint.h"
@@ -42,6 +41,9 @@ EBTNodeResult::Type UBTTaskNode_Patrol::ExecuteTask(UBehaviorTreeComponent& Owne
 		return EBTNodeResult::Failed;
 
 	CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+	
+	//Play the Sound
+	HorrorEnemy->PlaySound();
 	
 	//Get the patrol point from the current index and move the AI toward it 
 	CurrentIndex = OwnerComp.GetBlackboardComponent()->GetValueAsInt(TEXT("CurrentIndexPatrolPoint"));

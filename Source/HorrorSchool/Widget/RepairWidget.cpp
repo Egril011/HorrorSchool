@@ -50,6 +50,6 @@ void URepairWidget::SetProgressBarPercentage(float Percent)
 		if (!IsValid(TextWidget))
 			return;
 
-		TextWidget->SetText(FText::FromString("Repaired"));
+		TextWidget->SetText(FText::FromString("Repaired - Reparer"));
 	}
 }

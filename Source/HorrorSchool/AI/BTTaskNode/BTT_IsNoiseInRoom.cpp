@@ -42,6 +42,9 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::ExecuteTask(UBehaviorTreeComponent& Owne
 	
 	CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
 	
+	//Stop the Sound from the AI
+	HorrorEnemy->StopSound();
+	
 	FName RoomName = OwnerComp.GetBlackboardComponent()->GetValueAsName(TEXT("NoiseRoomName"));
 	if (RoomName.IsNone())
 		return EBTNodeResult::Failed;

@@ -27,13 +27,24 @@ public:
 	
 	//Get in which room the AI is
 	FName GetCurrentRoomAI() const {return CurrentRoomAI;};
+	
+	void PlaySound();
+	void StopSound();
 
 protected:
+	virtual void BeginPlay() override;
+	
 	UPROPERTY(EditAnywhere, Category="PatrolPath")
 	TObjectPtr<APatrolPath> PatrolPath;
 	
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* Camera;
+	
+	UPROPERTY(VisibleAnywhere, Category="AI|Audio")
+	TObjectPtr<UAudioComponent> AudioComponent;
+	
+	UPROPERTY(EditAnywhere, Category="AI|Audio")
+	TObjectPtr<USoundBase> AISound;
 	
 	virtual void SetCurrentRoom_Implementation(FName Room) override;
 
