@@ -46,7 +46,7 @@ EBTNodeResult::Type UBTT_MoveToHeardLocation::ExecuteTask(UBehaviorTreeComponent
 		PFC->OnRequestFinished.RemoveAll(this);
 		PFC->OnRequestFinished.AddUObject(this, &UBTT_MoveToHeardLocation::OnMoveToComplete);
 	}
-	UE_LOG(LogTemp, Warning, TEXT("TESt8"));
+
 	//Find if the hearing location is reachable
 	UNavigationPath* NavigationPath = UNavigationSystemV1::FindPathToLocationSynchronously(
 		GetWorld(),
@@ -62,11 +62,11 @@ EBTNodeResult::Type UBTT_MoveToHeardLocation::ExecuteTask(UBehaviorTreeComponent
 	}
 	
 	if (HorrorEnemyAIController->FindNearestPoint(HearingLocation))
-	{UE_LOG(LogTemp, Warning, TEXT("TESt7"));
+	{
 		HorrorEnemyAIController->MoveToLocation(HearingLocation);
 		return EBTNodeResult::InProgress;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("TESt6"));
+
 	return EBTNodeResult::Failed;
 }
 
@@ -108,12 +108,10 @@ void UBTT_MoveToHeardLocation::OnMoveToComplete(FAIRequestID RequestID, const FP
 	
 	if (Result.Code == EPathFollowingResult::Success)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TESt"));
 		FinishLatentTask(*BTComp, EBTNodeResult::Succeeded);
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("TESt1"));
 		FinishLatentTask(*BTComp, EBTNodeResult::Failed);
 	}
 }

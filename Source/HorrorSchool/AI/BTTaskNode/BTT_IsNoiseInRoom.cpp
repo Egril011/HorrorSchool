@@ -7,6 +7,7 @@
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "HorrorSchool/AI/AIHorrorEnemy.h"
 #include "HorrorSchool/AI/HorrorEnemyAIController.h"
 #include "HorrorSchool/Door/Door.h"
@@ -33,6 +34,13 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::ExecuteTask(UBehaviorTreeComponent& Owne
 	AAIHorrorEnemy* HorrorEnemy = Cast<AAIHorrorEnemy>(AIController->GetPawn());
 	if (!IsValid(HorrorEnemy))
 		return EBTNodeResult::Failed;
+	
+	//Modify the Speed of the AI
+	UCharacterMovementComponent* CharacterMovementComponent = HorrorEnemy->GetCharacterMovement();
+	if (!IsValid(CharacterMovementComponent))
+		return EBTNodeResult::Failed;
+	
+	CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
 	
 	FName RoomName = OwnerComp.GetBlackboardComponent()->GetValueAsName(TEXT("NoiseRoomName"));
 	if (RoomName.IsNone())
@@ -72,7 +80,6 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::ExecuteTask(UBehaviorTreeComponent& Owne
 	
 	if (UPathFollowingComponent* PFC = AIController->GetPathFollowingComponent())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Noise2"))
 		PFC->OnRequestFinished.RemoveAll(this);
 		PFC->OnRequestFinished.AddUObject(this, &UBTT_IsNoiseInRoom::OnMoveToComplete);
 	}
@@ -87,7 +94,6 @@ EBTNodeResult::Type UBTT_IsNoiseInRoom::ExecuteTask(UBehaviorTreeComponent& Owne
 	// If reachable move the AI to this point
 	if (NavigationPath && NavigationPath->IsValid() && !NavigationPath->IsPartial())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Noise3"))
 		AIController->MoveToActor(TargetDoor);
 		return EBTNodeResult::InProgress;
 	}

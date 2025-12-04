@@ -32,7 +32,6 @@ EBTNodeResult::Type UBTTaskNode_Patrol::ExecuteTask(UBehaviorTreeComponent& Owne
 		PFC->OnRequestFinished.AddUObject(this, &UBTTaskNode_Patrol::OnMoveToCompleted);
 	}
 	
-	// Set the Max speed of the Enemy
 	AAIHorrorEnemy* HorrorEnemy = Cast<AAIHorrorEnemy>(AIController->GetPawn());
 	if (!IsValid(HorrorEnemy))
 		return EBTNodeResult::Failed;
