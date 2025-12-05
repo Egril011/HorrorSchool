@@ -52,6 +52,9 @@ AHorrorSchoolCharacter::AHorrorSchoolCharacter()
 	{
 		SpotLightComponent->SetVisibility(false);
 	}
+	
+	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bStartWithTickEnabled = true;
 }
 
 //////////////////////////////////////////////////////////////////////////// Input
@@ -141,6 +144,20 @@ void AHorrorSchoolCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AHorrorSchoolCharacter::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+	
+	if (!IsValid(InteractComponent))
+		return;
+	
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetController()->GetPlayerViewPoint(CameraLocation, CameraRotation);
+	
+	InteractComponent->InteractTick(CameraLocation, CameraRotation);
 }
 
 void AHorrorSchoolCharacter::OnInteractStart()

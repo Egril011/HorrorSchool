@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "HorrorSchool/Flashlight/Widgets/FlashlightBatteryWidget.h"
+#include "HorrorSchool/Widget/InteractWidget.h"
 #include "HorrorSchool/Widget/MenuScreenWidget.h"
 #include "HorrorSchool/Widget/MenuWidget.h"
 #include "HorrorSchool/Widget/NotificationWidget.h"
@@ -34,6 +35,7 @@ void APlayerControllerHorrorSchool::ShowFuseBoxUI()
 	if (!IsValid(RepairWidget))
 		return;
 
+	bOnaObject = true;
 	RepairWidget->ProgressNotifier = ProgressNotifier;
 	RepairWidget->AddToViewport();
 }
@@ -43,6 +45,7 @@ void APlayerControllerHorrorSchool::CloseFuseBoxUI()
 	if (!IsValid(RepairWidget))
 		return;
 
+	bOnaObject = false;
 	RepairWidget->RemoveFromParent();
 	RepairWidget = nullptr;
 	ProgressNotifier = nullptr;
@@ -140,4 +143,43 @@ void APlayerControllerHorrorSchool::CloseMenu()
 	bMenuOpen = false;
 	MenuWidgetRef->RemoveFromParent();
 	MenuWidgetRef = nullptr;
+}
+
+void APlayerControllerHorrorSchool::Interact(bool bInteract)
+{
+	if (!IsValid(InteractWidget))
+		return;
+	
+	if (bOnaObject)
+	{
+		CleanUpInteract();
+		return;
+	}
+	
+	if (!bInteractWidget)
+	{
+		bInteractWidget = true;
+		
+		UInteractWidget* Interact = CreateWidget<UInteractWidget>(this, InteractWidget);
+		if (!IsValid(Interact))
+			return;
+		
+		InteractWidgetRef = Interact;
+		Interact->AddToViewport();
+	}
+	
+	if (!IsValid(InteractWidgetRef))
+		return;
+	
+	InteractWidgetRef->UpdateInteractableWidget(bInteract);
+}
+
+void APlayerControllerHorrorSchool::CleanUpInteract()
+{
+	if (!IsValid(InteractWidgetRef))
+		return;
+	
+	bInteractWidget = false;
+	InteractWidgetRef->RemoveFromParent();
+	InteractWidgetRef = nullptr;
 }

@@ -3,6 +3,7 @@
 
 #include "InteractComponent.h"
 #include "HorrorSchool/Interact/Interfaces/InteractInterface.h"
+#include "HorrorSchool/Player/PlayerControllerHorrorSchool.h"
 
 // Sets default values for this component's properties
 UInteractComponent::UInteractComponent()
@@ -20,6 +21,19 @@ void UInteractComponent::Interact(FVector StartPoint, FRotator Rotator)
 		if (HitActor->Implements<UInteractInterface>())
 			IInteractInterface::Execute_Interactable(HitActor, GetOwner());
 	}
+}
+
+void UInteractComponent::InteractTick(FVector StartPoint, FRotator Rotator)
+{
+	AActor* HitActor = nullptr;
+	
+	if (LineTrace(StartPoint, Rotator))
+	{
+		HitActor = HitResult.GetActor();
+	}
+	
+	bool bIsInteactable = (IsValid(HitActor) && HitActor->Implements<UInteractInterface>());
+	UpdateInteractUI(bIsInteactable);
 }
 
 void UInteractComponent::InteractHold(FVector StartPoint, FRotator Rotator, float HoldTime)
@@ -78,4 +92,19 @@ bool UInteractComponent::LineTrace(FVector StartPoint, FRotator Rotator)
 		0);
 	
 	return bHit;
+}
+
+void UInteractComponent::UpdateInteractUI(bool bInteractable)
+{
+	APawn* PawnOwner = Cast<APawn>(GetOwner());
+	if (!PawnOwner)
+	{
+		return;
+	}
+	
+	if (APlayerControllerHorrorSchool* ControllerHorrorSchool =
+		Cast<APlayerControllerHorrorSchool>(PawnOwner->GetController()))
+	{
+		ControllerHorrorSchool->Interact(bInteractable);
+	}
 }

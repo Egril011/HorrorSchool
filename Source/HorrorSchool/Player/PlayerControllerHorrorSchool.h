@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerControllerHorrorSchool.generated.h"
 
+class UInteractWidget;
 class UMenuScreenWidget;
 class UNotificationWidget;
 class UWinWidget;
@@ -49,6 +50,11 @@ public:
 	
 	//Close the menu
 	void CloseMenu();
+	
+	//Interact Menu
+	void Interact(bool bInteract);
+	
+	void CleanUpInteract();
 
 	UPROPERTY()
 	TObjectPtr<UFlashlightBatteryNotifier> FlashlightNotifier;
@@ -62,6 +68,9 @@ private:
 
 	UPROPERTY()
 	TObjectPtr<UMenuScreenWidget> MenuWidgetRef;
+	
+	UPROPERTY()
+	TObjectPtr<UInteractWidget> InteractWidgetRef;
 	
 	/*Flashlight*/
 	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
@@ -90,5 +99,11 @@ private:
 	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
 	TSubclassOf<UMenuScreenWidget> MenuWidget;
 	
+	//Interact
+	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
+	TSubclassOf<UInteractWidget> InteractWidget;
+	
 	bool bMenuOpen = false;
+	bool bInteractWidget = false;
+	bool bOnaObject = false;
 };

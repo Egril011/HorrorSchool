@@ -17,9 +17,14 @@ public:
 
 	//Execute the InteractInterface which is held by the Actor
 	void Interact(FVector StartPoint, FRotator Rotator);
+	void InteractTick(FVector StartPoint, FRotator Rotator);
 	void InteractHold(FVector StartPoint, FRotator Rotator, float HoldTime);
 	void InteractRelease();
 
+protected:
+	virtual void BeginPlay() override;
+	virtual void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 private:
 	UPROPERTY(EditAnywhere, Category = "Interact|Variable", meta=(AllowPrivateAccess))
 	float InteractDistance = 500.f;
@@ -30,4 +35,5 @@ private:
 	FHitResult HitResult;
 
 	bool LineTrace(FVector StartPoint, FRotator Rotator);
+	void UpdateInteractUI(bool bInteractable);
 };

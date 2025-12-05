@@ -87,6 +87,8 @@ protected:
 	void Look(const FInputActionValue& Value);
 
 protected:
+	virtual void Tick(float DeltaSeconds) override;
+	
 	// APawn interface
 	virtual void NotifyControllerChanged() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* InputComponent) override;
