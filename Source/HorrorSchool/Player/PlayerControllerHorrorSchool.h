@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PlayerControllerHorrorSchool.generated.h"
 
+class UMenuScreenWidget;
 class UNotificationWidget;
 class UWinWidget;
 class UMenuWidget;
@@ -42,6 +43,12 @@ public:
 	//Clean up notification
 	UFUNCTION()
 	void CleanUpNotification();
+	
+	//Open the menu
+	void OpenMenu();
+	
+	//Close the menu
+	void CloseMenu();
 
 	UPROPERTY()
 	TObjectPtr<UFlashlightBatteryNotifier> FlashlightNotifier;
@@ -49,10 +56,13 @@ public:
 	UPROPERTY()
 	TObjectPtr<UProgressNotifier> ProgressNotifier;
 	
+private:
 	UPROPERTY()
 	TObjectPtr<UNotificationWidget> NotificationWidgetRef;
+
+	UPROPERTY()
+	TObjectPtr<UMenuScreenWidget> MenuWidgetRef;
 	
-private:
 	/*Flashlight*/
 	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
 	TSubclassOf<UFlashlightBatteryWidget> FlashlightWidgetClass;
@@ -75,4 +85,10 @@ private:
 	//Notification
 	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
 	TSubclassOf<UNotificationWidget> NotificationWidget;
+	
+	//Menu
+	UPROPERTY(EditAnywhere, Category="Widget", meta=(AllowPrivateAccess))
+	TSubclassOf<UMenuScreenWidget> MenuWidget;
+	
+	bool bMenuOpen = false;
 };

@@ -56,9 +56,13 @@ class AHorrorSchoolCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* UseItemAction;
 	
-	// Inpuit to sprint
+	// Input to sprint
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	class UInputAction* SprintAction;
+	
+	//Input for the Menu
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	class UInputAction* MenuAction;
 
 public:
 	AHorrorSchoolCharacter();
@@ -141,5 +145,8 @@ private:
 	
 	UFUNCTION()
 	void Walk();
+	
+	UFUNCTION()
+	void OpenMenu();
 };  
 

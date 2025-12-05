@@ -13,6 +13,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Interact/Components/InteractComponent.h"
 #include "Items/Interfaces/UsableInterface.h"
+#include "Player/PlayerControllerHorrorSchool.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -95,6 +96,9 @@ void AHorrorSchoolCharacter::SetupPlayerInputComponent(UInputComponent* PlayerIn
 		//Sprint
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Triggered, this, &AHorrorSchoolCharacter::Sprint);
 		EnhancedInputComponent->BindAction(SprintAction, ETriggerEvent::Completed, this, &AHorrorSchoolCharacter::Walk);
+		
+		//Menu
+		EnhancedInputComponent->BindAction(MenuAction, ETriggerEvent::Started, this, &AHorrorSchoolCharacter::OpenMenu);
 	}
 	else
 	{
@@ -211,5 +215,13 @@ void AHorrorSchoolCharacter::Walk()
 	if (UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(GetCharacterMovement()))
 	{
 		CharacterMovementComponent->MaxWalkSpeed = NormalSpeed;
+	}
+}
+
+void AHorrorSchoolCharacter::OpenMenu()
+{
+	if (APlayerControllerHorrorSchool* PlayerController = Cast<APlayerControllerHorrorSchool>(GetController()))
+	{
+		PlayerController->OpenMenu();
 	}
 }

@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "HorrorSchool/Flashlight/Widgets/FlashlightBatteryWidget.h"
+#include "HorrorSchool/Widget/MenuScreenWidget.h"
 #include "HorrorSchool/Widget/MenuWidget.h"
 #include "HorrorSchool/Widget/NotificationWidget.h"
 #include "HorrorSchool/Widget/RepairWidget.h"
@@ -108,4 +109,35 @@ void APlayerControllerHorrorSchool::CleanUpNotification()
 		return;
 	
 	NotificationWidgetRef->RemoveFromParent();
+}
+
+void APlayerControllerHorrorSchool::OpenMenu()
+{
+	if (!IsValid(MenuWidget))
+		return;
+
+	if (!bMenuOpen)
+	{
+		bMenuOpen = true;
+		
+		UMenuScreenWidget* Menu = CreateWidget<UMenuScreenWidget>(this, MenuWidget);
+		if (!IsValid(Menu))
+			return;
+	
+		MenuWidgetRef = Menu;
+	
+		Menu->SetPlayerControllerRef(this);
+		Menu->AddToViewport();
+	}
+	
+}
+
+void APlayerControllerHorrorSchool::CloseMenu()  
+{
+	if (!IsValid(MenuWidgetRef))
+		return;
+	
+	bMenuOpen = false;
+	MenuWidgetRef->RemoveFromParent();
+	MenuWidgetRef = nullptr;
 }
